@@ -51,7 +51,22 @@
                         <RowDefinition  Height="30"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBox x:Name="txtSearchPokemon" TextChanged="txtSearchPokemon_TextChanged"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="65"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox SelectedIndex="0" x:Name="cboSearchCategory" SelectionChanged="cboSearchCategory_SelectionChanged">
+                            <ComboBoxItem>Name</ComboBoxItem>
+                            <ComboBoxItem>Form</ComboBoxItem>
+                            <ComboBoxItem>Type</ComboBoxItem>
+                            <ComboBoxItem>Move</ComboBoxItem>
+                            <ComboBoxItem>Ability</ComboBoxItem>
+                            <ComboBoxItem>Drop</ComboBoxItem>
+                            
+                        </ComboBox>
+                        <TextBox x:Name="txtSearchPokemon" TextChanged="txtSearchPokemon_TextChanged" Grid.Column="1"/>
+                    </Grid>
                     <DataGrid
                         Grid.Row="1"
                         x:Name="dtgPokemon"
@@ -91,11 +106,13 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Button Content="General" x:Name="btnGeneral" Grid.Column="0" Click="btnGeneral_Click"/>
                             <Button Content="Learnset" x:Name="btnLearnset" Grid.Column="1" Click="btnLearnset_Click"/>
                             <Button Content="Drops" x:Name="btnDrops" Grid.Column="2" Click="btnDrops_Click"/>
                             <Button Content="Evolutions" x:Name="btnEvolutions" Grid.Column="3" Click="btnEvolutions_Click"/>
+                            <Button Content="Spawns" x:Name="btnSpawns" Grid.Column="4" Click="btnSpawns_Click"/>
                         </Grid>
                         <Grid x:Name="grdGeneralInfo" Grid.Row="1" Visibility="Visible">
                             <Grid.ColumnDefinitions>
@@ -230,6 +247,14 @@
                         </Grid>
                         <ScrollViewer x:Name="scrEvolutionsInfo" Grid.Row="1" Visibility="Collapsed">
                             <Grid x:Name="grdEvolutionsInfo">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition  Height="*"/>
+                                </Grid.RowDefinitions>
+
+                            </Grid>
+                        </ScrollViewer>
+                        <ScrollViewer x:Name="scrSpawnsInfo" Grid.Row="1" Visibility="Collapsed">
+                            <Grid x:Name="grdSpawnsInfo">
                                 <Grid.RowDefinitions>
                                     <RowDefinition  Height="*"/>
                                 </Grid.RowDefinitions>

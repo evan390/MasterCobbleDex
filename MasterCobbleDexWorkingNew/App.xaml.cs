@@ -27,11 +27,16 @@ namespace MasterCobbleDexWorkingNew
             public int Speed { get; set; }
             public EVYield EVS { get; set; }
             public List<Drop> Drops { get; set; }
+            public PreEvolution PreEvo { get; set; }
             public List<Evolution> Evolutions { get; set; }
             public List<Pokemon> Forms { get; set; }
+            public int FormSearch { get; set; }
 
-
-
+        }
+        public class PreEvolution
+        {
+            public string PreEvolutionName { get; set; }
+            public string PreEvolutionForm { get; set; }
         }
         public class Ability
         {
@@ -55,6 +60,7 @@ namespace MasterCobbleDexWorkingNew
         public class Drop
         {
             public string Item { get; set; }
+            public string Location { get; set; }
             public string QuantityRange { get; set; }
             public double Percent { get; set; }
         }

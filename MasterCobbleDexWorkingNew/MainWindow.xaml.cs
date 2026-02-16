@@ -191,6 +191,12 @@ namespace MasterCobbleDexWorkingNew
         {
             try
             {
+                MessageBoxResult result = MessageBox.Show("Do you want to make a new Master Dex?","Confirmation",MessageBoxButton.YesNo,MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.No)
+                {
+                    return;
+                }
                 string masterPath = Path.Combine(dexPath, "master");
                 string masterSpeciesPath = Path.Combine(masterPath, "species");
                 string masterSpawnPoolPath = Path.Combine(masterPath, "spawnpool");
@@ -434,7 +440,23 @@ namespace MasterCobbleDexWorkingNew
                         pkmn.SpecialAttack = Convert.ToInt32(species.SelectToken("baseStats.special_attack")?.ToString());
                         pkmn.SpecialDefense = Convert.ToInt32(species.SelectToken("baseStats.special_defence")?.ToString());
                         pkmn.Speed = Convert.ToInt32(species.SelectToken("baseStats.speed")?.ToString());
+                        pkmn.FormSearch = -1;
+
+                        pkmn.PreEvo = new App.PreEvolution();
+
+                        if (species["preEvolution"] != null)
+                        {
+                            List<string> preEvoList = species.SelectToken("preEvolution")?.ToString().Split(" ").ToList();
+                            pkmn.PreEvo.PreEvolutionName = preEvoList[0];
+                            if (preEvoList.Count > 1)
+                            {
+                                pkmn.PreEvo.PreEvolutionForm = preEvoList[1];
+                            }
+
+                        }
+
                         pkmn.Abilities = new List<App.Ability>();
+
                         JArray mainAbilities = new JArray();
                         if (species["abilities"] != null)
                         {
@@ -485,7 +507,8 @@ namespace MasterCobbleDexWorkingNew
                                 for (int i = 0; i < (species.SelectToken("drops.entries") as JArray).Count; i++)
                                 {
                                     App.Drop newDrop = new App.Drop();
-                                    newDrop.Item = species.SelectToken("drops.entries[" + i + "].item")?.ToString();
+                                    newDrop.Item = species.SelectToken("drops.entries[" + i + "].item")?.ToString().Split(":")[1];
+                                    newDrop.Location = species.SelectToken("drops.entries[" + i + "].item")?.ToString().Split(":")[0];
                                     newDrop.QuantityRange = species.SelectToken("drops.entries[" + i + "].quantityRange")?.ToString();
                                     newDrop.Percent = Convert.ToDouble(species.SelectToken("drops.entries[" + i + "].percentage")?.ToString());
                                     pkmn.Drops.Add(newDrop);
@@ -531,11 +554,14 @@ namespace MasterCobbleDexWorkingNew
 
                                 if (species.SelectToken("evolutions[" + i + "].requiredContext") != null)
                                 {
-                                    App.EvoItem newEvoItem = new App.EvoItem();
-                                    newEvoItem.Item = species.SelectToken("evolutions[" + i + "].requiredContext")?.ToString();
-                                    newEvoItem.ItemMin = 1;
-                                    newEvoItem.ItemMax = 1;
-                                    newEvolution.Items.Add(newEvoItem);
+                                    if (String.IsNullOrEmpty(species.SelectToken("evolutions[" + i + "].requiredContext")?.ToString()))
+                                    {
+                                        App.EvoItem newEvoItem = new App.EvoItem();
+                                        newEvoItem.Item = species.SelectToken("evolutions[" + i + "].requiredContext")?.ToString();
+                                        newEvoItem.ItemMin = 1;
+                                        newEvoItem.ItemMax = 1;
+                                        newEvolution.Items.Add(newEvoItem);
+                                    }
                                 }
 
                                 if (species.SelectToken("evolutions[" + i + "].variant") != null && species.SelectToken("evolutions[" + i + "].variant").ToString() == "trade")
@@ -720,6 +746,20 @@ namespace MasterCobbleDexWorkingNew
                                         pkmnForm.SpecialAttack = Convert.ToInt32(species.SelectToken("forms[" + s + "].baseStats.special_attack")?.ToString());
                                         pkmnForm.SpecialDefense = Convert.ToInt32(species.SelectToken("forms[" + s + "].baseStats.special_defence")?.ToString());
                                         pkmnForm.Speed = Convert.ToInt32(species.SelectToken("forms[" + s + "].baseStats.speed")?.ToString());
+                                        pkmnForm.FormSearch = -1;
+
+                                        pkmnForm.PreEvo = new App.PreEvolution();
+                                        if (species.SelectToken("forms[" + s + "].preEvolution") != null)
+                                        {
+                                            List<string> preEvoFormList = species.SelectToken("forms[" + s + "].preEvolution")?.ToString().Split(" ").ToList();
+                                            pkmnForm.PreEvo.PreEvolutionName = preEvoFormList[0];
+                                            if (preEvoFormList.Count > 1)
+                                            {
+                                                pkmnForm.PreEvo.PreEvolutionForm = preEvoFormList[1];
+                                            }
+
+                                        }
+
                                         pkmnForm.Abilities = new List<App.Ability>();
                                         if (species.SelectToken("forms[" + s + "].abilities") != null)
                                         {
@@ -765,7 +805,8 @@ namespace MasterCobbleDexWorkingNew
                                                 for (int i = 0; i < (species.SelectToken("forms[" + s + "].drops.entries") as JArray).Count; i++)
                                                 {
                                                     App.Drop newDrop = new App.Drop();
-                                                    newDrop.Item = species.SelectToken("forms[" + s + "].drops.entries[" + i + "].item")?.ToString();
+                                                    newDrop.Item = species.SelectToken("forms[" + s + "].drops.entries[" + i + "].item")?.ToString().Split(":")[1];
+                                                    newDrop.Location = species.SelectToken("forms[" + s + "].drops.entries[" + i + "].item")?.ToString().Split(":")[0];
                                                     newDrop.QuantityRange = species.SelectToken("forms[" + s + "].drops.entries[" + i + "].quantityRange")?.ToString();
                                                     newDrop.Percent = Convert.ToDouble(species.SelectToken("forms[" + s + "].drops.entries[" + i + "].percentage")?.ToString());
                                                     pkmnForm.Drops.Add(newDrop);
@@ -804,11 +845,15 @@ namespace MasterCobbleDexWorkingNew
 
                                                 if (species.SelectToken("forms[" + s + "].evolutions[" + i + "].requiredContext") != null)
                                                 {
-                                                    App.EvoItem newEvoItem = new App.EvoItem();
-                                                    newEvoItem.Item = species.SelectToken("forms[" + s + "].evolutions[" + i + "].requiredContext")?.ToString();
-                                                    newEvoItem.ItemMin = 1;
-                                                    newEvoItem.ItemMax = 1;
-                                                    newEvolution.Items.Add(newEvoItem);
+
+                                                    if (String.IsNullOrEmpty(species.SelectToken("forms[" + s + "].evolutions[" + i + "].requiredContext")?.ToString()))
+                                                    {
+                                                        App.EvoItem newEvoItem = new App.EvoItem();
+                                                        newEvoItem.Item = species.SelectToken("forms[" + s + "].evolutions[" + i + "].requiredContext")?.ToString();
+                                                        newEvoItem.ItemMin = 1;
+                                                        newEvoItem.ItemMax = 1;
+                                                        newEvolution.Items.Add(newEvoItem);
+                                                    }
                                                 }
 
                                                 if (species.SelectToken("forms[" + s + "].evolutions[" + i + "].variant") != null && species.SelectToken("forms[" + s + "].evolutions[" + i + "].variant").ToString() == "trade")
@@ -990,15 +1035,174 @@ namespace MasterCobbleDexWorkingNew
             try
             {
                 dtgPokemon.ItemsSource = null;
-                List<App.Pokemon> filteredNames = new List<App.Pokemon>();
-                foreach (App.Pokemon pkmn in pokemonList)
+                List<App.Pokemon> filteredList = new List<App.Pokemon>();
+                switch (cboSearchCategory.SelectedIndex)
                 {
-                    if (pkmn.Name.ToLower().Contains(txtSearchPokemon.Text.ToLower()))
-                    {
-                        filteredNames.Add(pkmn);
-                    }
+                    case 0:
+                        foreach (App.Pokemon pkmn in pokemonList)
+                        {
+                            if (pkmn.Name.ToLower().Contains(txtSearchPokemon.Text.ToLower()))
+                            {
+                                filteredList.Add(pkmn);
+                                App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
+                                lastPkmn.FormSearch = -1;
+                            }
+                        }
+                        break;
+                    case 1:
+                        foreach (App.Pokemon pkmn in pokemonList)
+                        {
+                            for (int i = 0; i < pkmn.Forms.Count; i++)
+                            {
+                                if ((pkmn.Forms[i].Form != null && pkmn.Forms[i].Form.ToLower().Contains(txtSearchPokemon.Text.ToLower())))
+                                {
+                                    filteredList.Add(pkmn);
+                                    App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
+                                    lastPkmn.FormSearch = i;
+                                    break;
+                                }
+
+                            }
+                        }
+                        break;
+                    case 2:
+                        foreach (App.Pokemon pkmn in pokemonList)
+                        {
+                            if ((pkmn.Type1 != null && pkmn.Type1.ToLower().Contains(txtSearchPokemon.Text.ToLower())) || (pkmn.Type2 != null && pkmn.Type2.ToLower().Contains(txtSearchPokemon.Text.ToLower())))
+                            {
+                                filteredList.Add(pkmn);
+                                App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
+                                lastPkmn.FormSearch = -1;
+                            }
+                            else
+                            {
+                                for (int i = 0; i < pkmn.Forms.Count; i++)
+                                {
+                                    if ((pkmn.Forms[i].Type1 != null && pkmn.Forms[i].Type1.ToLower().Contains(txtSearchPokemon.Text.ToLower())) || (pkmn.Forms[i].Type2 != null && pkmn.Forms[i].Type2.ToLower().Contains(txtSearchPokemon.Text.ToLower())))
+                                    {
+                                        filteredList.Add(pkmn);
+                                        App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
+                                        lastPkmn.FormSearch = i;
+                                        break;
+                                    }
+
+                                }
+                            }
+                        }
+                        break;
+                    case 3:
+                        foreach (App.Pokemon pkmn in pokemonList)
+                        {
+                            bool foundMatch = false;
+                            if (pkmn.Moves != null)
+                            {
+                                foreach(App.Move move in pkmn.Moves)
+                                {
+                                    if (move.MoveName.ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
+                                    {
+                                        filteredList.Add(pkmn);
+                                        App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
+                                        lastPkmn.FormSearch = -1;
+                                        foundMatch = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(!foundMatch)
+                                for (int i = 0; i < pkmn.Forms.Count; i++)
+                                {
+                                    foreach (App.Move move in pkmn.Forms[i].Moves)
+                                    {
+                                        if (move.MoveName.ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
+                                        {
+                                            filteredList.Add(pkmn);
+                                            App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
+                                            lastPkmn.FormSearch = i;
+                                            foundMatch = true;
+                                            break;
+                                        }
+                                    }
+                                    if (foundMatch)
+                                        break;
+                                }
+                        }
+                        break;
+                    case 4:
+                        foreach (App.Pokemon pkmn in pokemonList)
+                        {
+                            bool foundMatch = false;
+                            if (pkmn.Abilities != null)
+                            {
+                                foreach (App.Ability ability in pkmn.Abilities)
+                                {
+                                    if (ability.AbilityName.ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
+                                    {
+                                        filteredList.Add(pkmn);
+                                        App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
+                                        lastPkmn.FormSearch = -1;
+                                        foundMatch = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!foundMatch)
+                                for (int i = 0; i < pkmn.Forms.Count; i++)
+                                {
+                                    foreach (App.Ability ability in pkmn.Forms[i].Abilities)
+                                    {
+                                        if (ability.AbilityName.ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
+                                        {
+                                            filteredList.Add(pkmn);
+                                            App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
+                                            lastPkmn.FormSearch = i;
+                                            foundMatch = true;
+                                            break;
+                                        }
+                                    }
+                                    if (foundMatch)
+                                        break;
+                                }
+                        }
+                        break;
+                    case 5:
+                        foreach (App.Pokemon pkmn in pokemonList)
+                        {
+                            bool foundMatch = false;
+                            if (pkmn.Drops != null)
+                            {
+                                foreach (App.Drop drop in pkmn.Drops)
+                                {
+                                    if (drop.Item.ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
+                                    {
+                                        filteredList.Add(pkmn);
+                                        App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
+                                        lastPkmn.FormSearch = -1;
+                                        foundMatch = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!foundMatch)
+                                for (int i = 0; i < pkmn.Forms.Count; i++)
+                                {
+                                    foreach (App.Drop drop in pkmn.Forms[i].Drops)
+                                    {
+                                        if (drop.Item.ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
+                                        {
+                                            filteredList.Add(pkmn);
+                                            App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
+                                            lastPkmn.FormSearch = i;
+                                            foundMatch = true;
+                                            break;
+                                        }
+                                    }
+                                    if (foundMatch)
+                                        break;
+                                }
+                        }
+                        break;
                 }
-                dtgPokemon.ItemsSource = filteredNames;
+                dtgPokemon.ItemsSource = filteredList;
 
             }
             catch
@@ -1030,7 +1234,10 @@ namespace MasterCobbleDexWorkingNew
                         form.Form = ProperString(form.Form);
                     }
                     cboForm.ItemsSource = allForms;
-                    cboForm.SelectedIndex = 0;
+                    if(SelectedPokemon.FormSearch != -1)
+                        cboForm.SelectedIndex = SelectedPokemon.FormSearch + 1;
+                    else
+                        cboForm.SelectedIndex = 0;
                 }
             }
             catch
@@ -1269,16 +1476,19 @@ namespace MasterCobbleDexWorkingNew
                             {
                                 foreach (EvoItem item in evolution.Items)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Give "));
-                                    if (item.ItemMin == item.ItemMax)
+                                    if (!String.IsNullOrWhiteSpace(item.Item))
                                     {
-                                        blkEvoInfo.Inlines.Add(new Run(item.ItemMin + " " + item.Item + ". "));
-                                        blkEvoInfo.Inlines.Add(new LineBreak());
-                                    }
-                                    else
-                                    {
-                                        blkEvoInfo.Inlines.Add(new Run(item.ItemMin + "-" + item.ItemMax + " " + item.Item + ". "));
-                                        blkEvoInfo.Inlines.Add(new LineBreak());
+                                        blkEvoInfo.Inlines.Add(new Run("Give "));
+                                        if (item.ItemMin == item.ItemMax)
+                                        {
+                                            blkEvoInfo.Inlines.Add(new Run(item.ItemMin + " " + item.Item + ". "));
+                                            blkEvoInfo.Inlines.Add(new LineBreak());
+                                        }
+                                        else
+                                        {
+                                            blkEvoInfo.Inlines.Add(new Run(item.ItemMin + "-" + item.ItemMax + " " + item.Item + ". "));
+                                            blkEvoInfo.Inlines.Add(new LineBreak());
+                                        }
                                     }
 
                                 }
@@ -1450,6 +1660,7 @@ namespace MasterCobbleDexWorkingNew
             grdLearnsetInfo.Visibility = Visibility.Collapsed;
             grdDropsInfo.Visibility = Visibility.Collapsed;
             scrEvolutionsInfo.Visibility = Visibility.Collapsed;
+            scrSpawnsInfo.Visibility = Visibility.Collapsed;
 
         }
 
@@ -1459,6 +1670,7 @@ namespace MasterCobbleDexWorkingNew
             grdLearnsetInfo.Visibility = Visibility.Visible;
             grdDropsInfo.Visibility = Visibility.Collapsed;
             scrEvolutionsInfo.Visibility = Visibility.Collapsed;
+            scrSpawnsInfo.Visibility = Visibility.Collapsed;
 
         }
 
@@ -1468,6 +1680,7 @@ namespace MasterCobbleDexWorkingNew
             grdLearnsetInfo.Visibility = Visibility.Collapsed;
             grdDropsInfo.Visibility = Visibility.Visible;
             scrEvolutionsInfo.Visibility = Visibility.Collapsed;
+            scrSpawnsInfo.Visibility = Visibility.Collapsed;
 
         }
 
@@ -1477,6 +1690,16 @@ namespace MasterCobbleDexWorkingNew
             grdLearnsetInfo.Visibility = Visibility.Collapsed;
             grdDropsInfo.Visibility = Visibility.Collapsed;
             scrEvolutionsInfo.Visibility = Visibility.Visible;
+            scrSpawnsInfo.Visibility = Visibility.Collapsed;
+
+        }
+        private void btnSpawns_Click(object sender, RoutedEventArgs e)
+        {
+            grdGeneralInfo.Visibility = Visibility.Collapsed;
+            grdLearnsetInfo.Visibility = Visibility.Collapsed;
+            grdDropsInfo.Visibility = Visibility.Collapsed;
+            scrEvolutionsInfo.Visibility = Visibility.Collapsed;
+            scrSpawnsInfo.Visibility = Visibility.Visible;
 
         }
 
@@ -1498,6 +1721,12 @@ namespace MasterCobbleDexWorkingNew
                 btnCreateDex.Visibility= Visibility.Collapsed;
                 btnPanelSwitch.Content = "Access Master Dex";
             }
+        }
+
+        private void cboSearchCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(txtSearchPokemon != null)
+                txtSearchPokemon.Text = "";
         }
     }
 }
