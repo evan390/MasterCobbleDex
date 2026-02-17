@@ -16,9 +16,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button Content="Add Content" Grid.Row="0" Grid.Column="1" Click="Add_Content_Click" x:Name="btnAddContent"/>
-            <Button Content="Edit Loaded Content" Grid.Row="0" Grid.Column="0" Click="btnPanelSwitch_Click" x:Name="btnPanelSwitch"/>
-            <Button Content="Create MasterDex"  Grid.Row="0" Grid.Column="1" Click="Button_Click" x:Name="btnCreateDex"/>
+            <Button Content="Edit Loaded Content" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Click="btnPanelSwitch_Click" x:Name="btnPanelSwitch"/>
 
             <Grid x:Name="grdEdit" Grid.Row="1" Grid.ColumnSpan="2" Background="IndianRed" Visibility="Collapsed">
                 <Grid.ColumnDefinitions>
@@ -27,10 +25,28 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid x:Name="grdOptions">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Button Content="Create MasterDex"  Grid.Row="1" Click="Button_Click" x:Name="btnCreateDex"/>
+                    <Button Content="Add Content" Grid.Row="2" Click="Add_Content_Click" x:Name="btnAddContent"/>
+                    <Button Content="Remove Deselected"  Grid.Row="3" Click="btnRemoveDeselected_Click" x:Name="btnRemoveDeselected"/>
+                    <Button Content="Change Directory"  Grid.Row="4" Click="btnChangeDirectory_Click" x:Name="btnChangeDirectory"/>
 
                 </Grid>
                 <Grid x:Name="grdSelections" Grid.Column="2">
-                    <ScrollViewer>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <CheckBox x:Name="chkAll" Content="All" IsChecked="True" Click="chkAll_Click"/>
+                    <ScrollViewer Grid.Row="1">
                         <Grid x:Name="grdMods">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="25"/>

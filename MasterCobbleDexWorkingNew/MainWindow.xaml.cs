@@ -19,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Xml.Linq;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using static MasterCobbleDexWorkingNew.App;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -64,6 +65,8 @@ namespace MasterCobbleDexWorkingNew
                         modName = Regex.Replace(modName, @"v?\d+(\.\d+)*", "");
                         modName = Regex.Replace(modName, @"[\s\-_\.]+", "");
                         modName = modName.Trim();
+                        if (String.IsNullOrWhiteSpace(modName) || modName == "client" || modName == "minecraftjar")
+                            modName = "minecraft";
 
                         string modPath = Path.Combine(dexPath, modName);
 
@@ -79,6 +82,12 @@ namespace MasterCobbleDexWorkingNew
                         Directory.CreateDirectory(speciesAdditionsPath);
                         string spawnPoolWorldPath = Path.Combine(modPath, "spawn_pool_world");
                         Directory.CreateDirectory(spawnPoolWorldPath);
+                        string biomeTagPath = Path.Combine(modPath, "biome_tag");
+                        Directory.CreateDirectory(biomeTagPath);
+                        string movePath = Path.Combine(modPath, "moves");
+                        Directory.CreateDirectory(movePath);
+                        string abilityPath = Path.Combine(modPath, "abilities");
+                        Directory.CreateDirectory(abilityPath);
 
                         try
                         {
@@ -88,6 +97,9 @@ namespace MasterCobbleDexWorkingNew
                                 List<ZipArchiveEntry> speciesEntries = new List<ZipArchiveEntry>();
                                 List<ZipArchiveEntry> speciesAdditionsEntries = new List<ZipArchiveEntry>();
                                 List<ZipArchiveEntry> spawnPoolWorldEntries = new List<ZipArchiveEntry>();
+                                List<ZipArchiveEntry> biomeTagEntries = new List<ZipArchiveEntry>();
+                                List<ZipArchiveEntry> moveEntries = new List<ZipArchiveEntry>();
+                                List<ZipArchiveEntry> abilityEntries = new List<ZipArchiveEntry>();
 
                                 foreach (ZipArchiveEntry entry in zip.Entries)
                                 {
@@ -105,6 +117,11 @@ namespace MasterCobbleDexWorkingNew
                                     if (!string.IsNullOrEmpty(entry.FullName) && entry.FullName.StartsWith("data/") && entry.FullName.Contains("/spawn_pool_world/") && entry.FullName.EndsWith(".json"))
                                     {
                                         spawnPoolWorldEntries.Add(entry);
+                                    }
+                                    //biome tag files
+                                    if (!string.IsNullOrEmpty(entry.FullName) && entry.FullName.StartsWith("data/") && entry.FullName.Contains("/tags/worldgen/biome/") && entry.FullName.EndsWith(".json"))
+                                    {
+                                        biomeTagEntries.Add(entry);
                                     }
                                 }
 
@@ -142,23 +159,27 @@ namespace MasterCobbleDexWorkingNew
                                     }
 
                                 }
-
-                                if (!Directory.EnumerateFileSystemEntries(speciesPath).Any() && !Directory.EnumerateFileSystemEntries(speciesAdditionsPath).Any() && !Directory.EnumerateFileSystemEntries(spawnPoolWorldPath).Any())
+                                foreach (ZipArchiveEntry entry in biomeTagEntries)
                                 {
-                                    Directory.Delete(speciesPath);
-                                    Directory.Delete(speciesAdditionsPath);
-                                    Directory.Delete(spawnPoolWorldPath);
-                                    Directory.Delete(modPath);
+                                    string destinationPath = Path.Combine(biomeTagPath, entry.Name);
+                                    using (var entryStream = entry.Open())
+                                    using (var fileStream = File.Create(destinationPath))
+                                    {
+                                        entryStream.CopyTo(fileStream);
+                                    }
+
+                                }
+
+                                if (!Directory.EnumerateFileSystemEntries(speciesPath).Any() && !Directory.EnumerateFileSystemEntries(speciesAdditionsPath).Any() && !Directory.EnumerateFileSystemEntries(spawnPoolWorldPath).Any() && !Directory.EnumerateFileSystemEntries(biomeTagPath).Any())
+                                {
+                                    Directory.Delete(modPath, true);
                                 }
                             }
 
                         }
                         catch
                         {
-                            Directory.Delete(speciesPath);
-                            Directory.Delete(speciesAdditionsPath);
-                            Directory.Delete(spawnPoolWorldPath);
-                            Directory.Delete(modPath);
+                            Directory.Delete(modPath, true);
                             MessageBox.Show(filePath + " is unable to load");
                         }
 
@@ -179,12 +200,34 @@ namespace MasterCobbleDexWorkingNew
 
         private void folderInit()
         {
+            string keyPath = @"Software\MasterCobbleDex";
 
-            string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            using RegistryKey key = Registry.CurrentUser.OpenSubKey(keyPath);
 
-            dexPath = Path.Combine(documentsPath, "MasterCobbleDex");
+            if (key != null)
+            {
+                dexPath = Path.Combine(key.GetValue("DexPath")?.ToString(), "MasterCobbleDex");
 
-            Directory.CreateDirectory(dexPath);
+                Directory.CreateDirectory(dexPath);
+
+            }
+            else
+            {
+
+                RegistryKey keyNew = Registry.CurrentUser.CreateSubKey(keyPath);
+
+                string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                keyNew.SetValue("DexPath", documentsPath);
+
+                dexPath = Path.Combine(documentsPath, "MasterCobbleDex");
+
+                Directory.CreateDirectory(dexPath);
+
+                keyNew.Close();
+
+            }
+            key.Close();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -217,7 +260,12 @@ namespace MasterCobbleDexWorkingNew
 
                 if (!Directory.Exists(Path.Combine(dexPath, "cobblemon")))
                 {
-                    MessageBox.Show("Import based cobblemon before making a Master Dex");
+                    MessageBox.Show("Import base mod cobblemon before making a Master Dex");
+                    return;
+                }
+                if (!Directory.Exists(Path.Combine(dexPath, "minecraft")))
+                {
+                    MessageBox.Show("Import base minecraft jar before making a Master Dex. This can be found in your AppData/.minecraft/versions folder");
                     return;
                 }
 
@@ -382,7 +430,7 @@ namespace MasterCobbleDexWorkingNew
                 int count = 0;
                 foreach (string name in folderNames)
                 {
-                    if (name != "cobblemon" && name != "master")
+                    if (name != "cobblemon" && name != "master" && name != "minecraft")
                     {
                         RowDefinition row = new RowDefinition();
                         GridLengthConverter grc = new GridLengthConverter();
@@ -1708,17 +1756,13 @@ namespace MasterCobbleDexWorkingNew
             if(grdEdit.Visibility == Visibility.Visible)
             {
                 grdEdit.Visibility = Visibility.Collapsed;
-                btnAddContent.Visibility = Visibility.Collapsed;
                 grdDex.Visibility = Visibility.Visible;
-                btnCreateDex.Visibility = Visibility.Visible;
                 btnPanelSwitch.Content = "Edit Loaded Content";
             }
             else
             {
                 grdEdit.Visibility= Visibility.Visible;
-                btnAddContent.Visibility= Visibility.Visible;
                 grdDex.Visibility= Visibility.Collapsed;
-                btnCreateDex.Visibility= Visibility.Collapsed;
                 btnPanelSwitch.Content = "Access Master Dex";
             }
         }
@@ -1727,6 +1771,77 @@ namespace MasterCobbleDexWorkingNew
         {
             if(txtSearchPokemon != null)
                 txtSearchPokemon.Text = "";
+        }
+
+        private void btnRemoveDeselected_Click(object sender, RoutedEventArgs e)
+        {
+
+            MessageBoxResult result = MessageBox.Show("Do you want to remove all deselected addons?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.No)
+            {
+                return;
+            }
+
+            foreach (CheckBox chkbx in modCheckboxes)
+            {
+                if(chkbx.IsChecked == false)
+                {
+                    Directory.Delete(Path.Combine(dexPath, chkbx.Content.ToString()), true);
+                }
+            }
+            CountFolders();
+        }
+
+        private void btnChangeDirectory_Click(object sender, RoutedEventArgs e)
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            dialog.IsFolderPicker = true;
+
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                string folderPath = dialog.FileName;
+                string keyPath = @"Software\MasterCobbleDex";
+                using RegistryKey key = Registry.CurrentUser.OpenSubKey(keyPath, true);
+                string sourcePath = dexPath;
+                string destinationPath = Path.Combine(folderPath, "MasterCobbleDex");
+                CopyFolder(sourcePath, destinationPath);
+                key.SetValue("DexPath", folderPath);
+                dexPath = Path.Combine(folderPath, "MasterCobbleDex");
+                RefreshDataGrid();
+                Directory.Delete(sourcePath, true);
+                key.Close();
+            }
+        }
+        public static void CopyFolder(string sourceFolder, string destinationFolder)
+        {
+            Directory.CreateDirectory(destinationFolder);
+
+            foreach (string file in Directory.GetFiles(sourceFolder))
+            {
+                string fileName = Path.GetFileName(file);
+                string destFile = Path.Combine(destinationFolder, fileName);
+
+                File.Copy(file, destFile, true); 
+            }
+            
+            foreach (string folder in Directory.GetDirectories(sourceFolder))
+            {
+                string folderName = Path.GetFileName(folder);
+                string destFolder = Path.Combine(destinationFolder, folderName);
+
+                CopyFolder(folder, destFolder);
+            }
+        }
+
+        private void chkAll_Click(object sender, RoutedEventArgs e)
+        {
+            if(chkAll.IsChecked == true)
+                foreach (CheckBox chkbx in modCheckboxes)
+                    chkbx.IsChecked = true;
+            else
+                foreach (CheckBox chkbx in modCheckboxes)
+                    chkbx.IsChecked = false;
+
         }
     }
 }
