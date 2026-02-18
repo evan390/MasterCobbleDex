@@ -31,6 +31,7 @@ namespace MasterCobbleDexWorkingNew
             public List<Evolution> Evolutions { get; set; }
             public List<Pokemon> Forms { get; set; }
             public int FormSearch { get; set; }
+            public List<Spawn> Spawns { get; set; }
 
         }
         public class PreEvolution
@@ -113,6 +114,37 @@ namespace MasterCobbleDexWorkingNew
             public string UsedMove { get; set; }
             public int UsedMoveTimes { get; set; }
         }
+        public class Spawn
+        {
+            public string ID { get; set; }
+            public string Pokemon { get; set; }
+            public List<string> Presets { get; set; }
+            public string SpawnablePositionType { get; set; }
+            public string Bucket { get; set; }
+            public Condition Condition { get; set; }
+            public Condition AntiCondition { get; set; }
+        }
+        public class Condition
+        {
+            public bool? CanSeeSky { get; set; }
+            public int? MinSkyLight { get; set; }
+            public int? MaxSkyLight { get; set; }
+            public int? MinY{ get; set; }
+            public int? MaxY { get; set; }
+            public string TimeRange { get; set; }
+            public string MoonPhase { get; set; }
+            public bool? IsRaining { get; set; }
+            public List<string> NeededNearbyBlocks { get; set; }
+            public List<string> NeededBaseBlocks { get; set; }
+            public List<string> Biomes { get; set; }
+            public List<string> Structures { get; set; }
+            public bool? IsSlimeChunk { get; set; }
+            public int? MinLureLevel { get; set; }
+            public int? MaxLureLevel { get; set; }
+            public string RodType { get; set; }
+            public string Bait { get; set; }
+        }
+
     }
 
 }

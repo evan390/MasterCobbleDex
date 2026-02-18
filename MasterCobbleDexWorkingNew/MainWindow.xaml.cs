@@ -461,6 +461,7 @@ namespace MasterCobbleDexWorkingNew
             {
                 dtgPokemon.ItemsSource = null;
                 string masterSpeciesPath = Path.Combine(dexPath, "master", "species");
+                string masterSpawnPoolPath = Path.Combine(dexPath, "master", "spawnpool");
                 List<string> fileNames = new List<string>();
                 try
                 {
@@ -476,6 +477,10 @@ namespace MasterCobbleDexWorkingNew
                     try
                     {
                         JObject species = JObject.Parse(File.ReadAllText(Path.Combine(masterSpeciesPath, name + ".json")));
+                        JObject spawnpool = null;
+                        if (File.Exists(Path.Combine(masterSpawnPoolPath, name + ".json")))
+                            spawnpool = JObject.Parse(File.ReadAllText(Path.Combine(masterSpawnPoolPath, name + ".json")));
+
                         App.Pokemon pkmn = new App.Pokemon();
                         pkmn.Name = ProperString(species.SelectToken("name")?.ToString());
                         pkmn.Form = "Default";
@@ -772,8 +777,8 @@ namespace MasterCobbleDexWorkingNew
                             pkmn.Evolutions.Add(newEvolution);
                         }
 
-                        pkmn.Forms = new List<App.Pokemon>();
 
+                        pkmn.Forms = new List<App.Pokemon>();
                         if (species["forms"] != null)
                         {
                             for (int s = 0; s < (species.SelectToken("forms") as JArray).Count; s++)
@@ -1043,6 +1048,7 @@ namespace MasterCobbleDexWorkingNew
                                             }
                                         }
                                         pkmnForm.Forms = new List<App.Pokemon>();
+                                        pkmnForm.Spawns = new List<App.Spawn>();
 
 
                                         //pokemonList.Add(pkmn);
@@ -1057,7 +1063,307 @@ namespace MasterCobbleDexWorkingNew
                             }
                         }
 
+                        pkmn.Spawns = new List<App.Spawn>();
+                        if (spawnpool != null)
+                        {
+                            for (int i = 0; i < (spawnpool.SelectToken("spawns") as JArray).Count; i++)
+                            {
+                                App.Spawn newSpawn = new App.Spawn();
+                                newSpawn.Presets = new List<string>();
+                                newSpawn.Condition = new App.Condition();
+                                newSpawn.Condition.IsRaining = null;
+                                newSpawn.Condition.IsSlimeChunk = null;
+                                newSpawn.Condition.CanSeeSky = null;
+                                newSpawn.Condition.MinSkyLight = null;
+                                newSpawn.Condition.MaxSkyLight = null;
+                                newSpawn.Condition.MinY = null;
+                                newSpawn.Condition.MaxY = null;
+                                newSpawn.Condition.MinLureLevel = null;
+                                newSpawn.Condition.MaxLureLevel = null;
 
+                                newSpawn.AntiCondition = new App.Condition();
+                                newSpawn.AntiCondition.IsRaining = null;
+                                newSpawn.AntiCondition.IsSlimeChunk = null;
+                                newSpawn.AntiCondition.CanSeeSky = null;
+                                newSpawn.AntiCondition.MinSkyLight = null;
+                                newSpawn.AntiCondition.MaxSkyLight = null;
+                                newSpawn.AntiCondition.MinY = null;
+                                newSpawn.AntiCondition.MaxY = null;
+                                newSpawn.AntiCondition.MinLureLevel = null;
+                                newSpawn.AntiCondition.MaxLureLevel = null;
+
+                                newSpawn.ID = spawnpool.SelectToken("spawns[" + i + "].id")?.ToString();
+                                newSpawn.Pokemon = spawnpool.SelectToken("spawns[" + i + "].pokemon")?.ToString();
+                                newSpawn.SpawnablePositionType = spawnpool.SelectToken("spawns[" + i + "].spawnablePositionType")?.ToString();
+                                newSpawn.Bucket = spawnpool.SelectToken("spawns[" + i + "].bucket")?.ToString();
+
+                                JArray spawnPresents = new JArray();
+                                if (spawnpool.SelectToken("spawns[" + i + "].presets") != null)
+                                {
+                                    spawnPresents = spawnpool.SelectToken("spawns[" + i + "].presets") as JArray;
+                                    foreach (var preset in spawnPresents)
+                                        newSpawn.Presets.Add(preset.ToString());
+                                }
+
+                                if (spawnpool.SelectToken("spawns[" + i + "].condition") != null)
+                                {
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.canSeeSky") != null)
+                                        newSpawn.Condition.CanSeeSky = Convert.ToBoolean(spawnpool.SelectToken("spawns[" + i + "].condition.canSeeSky").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.minSkyLight") != null)
+                                        newSpawn.Condition.MinSkyLight = Convert.ToInt32(spawnpool.SelectToken("spawns[" + i + "].condition.minSkyLight").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.maxSkyLight") != null)
+                                        newSpawn.Condition.MaxSkyLight = Convert.ToInt32(spawnpool.SelectToken("spawns[" + i + "].condition.maxSkyLight").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.minY") != null)
+                                        newSpawn.Condition.MinY = Convert.ToInt32(spawnpool.SelectToken("spawns[" + i + "].condition.minY").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.maxY") != null)
+                                        newSpawn.Condition.MaxY = Convert.ToInt32(spawnpool.SelectToken("spawns[" + i + "].condition.maxY").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.timeRange") != null)
+                                        newSpawn.Condition.TimeRange = spawnpool.SelectToken("spawns[" + i + "].condition.timeRange").ToString();
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.moonPhase") != null)
+                                        newSpawn.Condition.MoonPhase = spawnpool.SelectToken("spawns[" + i + "].condition.moonPhase").ToString();
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.isRaining") != null)
+                                        newSpawn.Condition.IsRaining = Convert.ToBoolean(spawnpool.SelectToken("spawns[" + i + "].condition.isRaining").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.isSlimeChunk") != null)
+                                        newSpawn.Condition.IsSlimeChunk = Convert.ToBoolean(spawnpool.SelectToken("spawns[" + i + "].condition.isSlimeChunk").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.minLureLevel") != null)
+                                        newSpawn.Condition.MinLureLevel = Convert.ToInt32(spawnpool.SelectToken("spawns[" + i + "].condition.minLureLevel").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.maxLureLevel") != null)
+                                        newSpawn.Condition.MaxLureLevel = Convert.ToInt32(spawnpool.SelectToken("spawns[" + i + "].condition.maxLureLevel").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.rodType") != null)
+                                        newSpawn.Condition.RodType = spawnpool.SelectToken("spawns[" + i + "].condition.rodType").ToString();
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.bait") != null)
+                                        newSpawn.Condition.Bait = spawnpool.SelectToken("spawns[" + i + "].condition.bait").ToString();
+
+                                    newSpawn.Condition.NeededNearbyBlocks = new List<string>();
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.neededNearbyBlocks") != null)
+                                        foreach (var block in spawnpool.SelectToken("spawns[" + i + "].condition.neededNearbyBlocks") as JArray)
+                                            newSpawn.Condition.NeededNearbyBlocks.Add(block.ToString());
+
+                                    newSpawn.Condition.NeededBaseBlocks = new List<string>();
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.neededBaseBlocks") != null)
+                                        foreach (var block in spawnpool.SelectToken("spawns[" + i + "].condition.neededBaseBlocks") as JArray)
+                                            newSpawn.Condition.NeededBaseBlocks.Add(block.ToString());
+
+                                    newSpawn.Condition.Structures = new List<string>();
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.structures") != null)
+                                        foreach (var block in spawnpool.SelectToken("spawns[" + i + "].condition.structures") as JArray)
+                                            newSpawn.Condition.Structures.Add(block.ToString());
+
+                                    newSpawn.Condition.Biomes = new List<string>();
+                                    if (spawnpool.SelectToken("spawns[" + i + "].condition.biomes") != null)
+                                    {
+                                        List<string> biomes = new List<string>();
+                                        List<string> tags = new List<string>();
+
+                                        foreach (var block in spawnpool.SelectToken("spawns[" + i + "].condition.biomes") as JArray)
+                                        {
+                                            if (block.ToString().StartsWith('#'))
+                                                tags.Add(block.ToString());
+                                            else
+                                                biomes.Add(block.ToString());
+                                        }
+                                        while (tags.Count != 0)
+                                        {
+                                            string mod = tags[0].Substring(1).Split(":")[0];
+                                            string tag = tags[0].Substring(1).Split(":")[1];
+                                            string tagPath = Path.Combine(dexPath, mod, "biome_tag", tag + ".json");
+
+                                            if (File.Exists(tagPath))
+                                            {
+                                                JObject tagLookUp = JObject.Parse(File.ReadAllText(tagPath));
+                                                JArray tagValues = tagLookUp["values"] as JArray;
+
+                                                foreach (JToken value in tagValues)
+                                                {
+                                                    if (value.Type == JTokenType.String)
+                                                    {
+                                                        string tagString = value.ToString();
+                                                        if (tagString.StartsWith('#'))
+                                                            tags.Add(tagString);
+                                                        else
+                                                            biomes.Add(tagString);
+                                                    }
+                                                    else if (value.Type == JTokenType.Object)
+                                                    {
+                                                        JObject tagObject = (JObject)value;
+                                                        string tagID = tagObject["id"]?.ToString();
+                                                        if (tagID.StartsWith('#'))
+                                                            tags.Add(tagID);
+                                                        else
+                                                            biomes.Add(tagID);
+
+                                                    }
+                                                }
+                                                tags.Remove(tags[0]);
+                                            }
+                                            else
+                                            {
+                                                tags.Remove(tags[0]);
+                                            }
+                                        }
+                                        foreach(string biome in biomes)
+                                            newSpawn.Condition.Biomes.Add(biome);
+                                        newSpawn.Condition.Biomes = newSpawn.Condition.Biomes.Distinct().ToList();
+                                        newSpawn.Condition.Biomes.Sort();
+                                    }
+
+
+                                }
+
+                                if (spawnpool.SelectToken("spawns[" + i + "].anticondition") != null)
+                                {
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.canSeeSky") != null)
+                                        newSpawn.AntiCondition.CanSeeSky = Convert.ToBoolean(spawnpool.SelectToken("spawns[" + i + "].anticondition.canSeeSky").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.minSkyLight") != null)
+                                        newSpawn.AntiCondition.MinSkyLight = Convert.ToInt32(spawnpool.SelectToken("spawns[" + i + "].anticondition.minSkyLight").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.maxSkyLight") != null)
+                                        newSpawn.AntiCondition.MaxSkyLight = Convert.ToInt32(spawnpool.SelectToken("spawns[" + i + "].anticondition.maxSkyLight").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.minY") != null)
+                                        newSpawn.AntiCondition.MinY = Convert.ToInt32(spawnpool.SelectToken("spawns[" + i + "].anticondition.minY").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.maxY") != null)
+                                        newSpawn.AntiCondition.MaxY = Convert.ToInt32(spawnpool.SelectToken("spawns[" + i + "].anticondition.maxY").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.timeRange") != null)
+                                        newSpawn.AntiCondition.TimeRange = spawnpool.SelectToken("spawns[" + i + "].anticondition.timeRange").ToString();
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.moonPhase") != null)
+                                        newSpawn.AntiCondition.MoonPhase = spawnpool.SelectToken("spawns[" + i + "].anticondition.moonPhase").ToString();
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.isRaining") != null)
+                                        newSpawn.AntiCondition.IsRaining = Convert.ToBoolean(spawnpool.SelectToken("spawns[" + i + "].anticondition.isRaining").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.isSlimeChunk") != null)
+                                        newSpawn.AntiCondition.IsSlimeChunk = Convert.ToBoolean(spawnpool.SelectToken("spawns[" + i + "].anticondition.isSlimeChunk").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.minLureLevel") != null)
+                                        newSpawn.AntiCondition.MinLureLevel = Convert.ToInt32(spawnpool.SelectToken("spawns[" + i + "].anticondition.minLureLevel").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.maxLureLevel") != null)
+                                        newSpawn.AntiCondition.MaxLureLevel = Convert.ToInt32(spawnpool.SelectToken("spawns[" + i + "].anticondition.maxLureLevel").ToString());
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.rodType") != null)
+                                        newSpawn.AntiCondition.RodType = spawnpool.SelectToken("spawns[" + i + "].anticondition.rodType").ToString();
+
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.bait") != null)
+                                        newSpawn.AntiCondition.Bait = spawnpool.SelectToken("spawns[" + i + "].anticondition.bait").ToString();
+
+                                    newSpawn.AntiCondition.NeededNearbyBlocks = new List<string>();
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.neededNearbyBlocks") != null)
+                                        foreach (var block in spawnpool.SelectToken("spawns[" + i + "].anticondition.neededNearbyBlocks") as JArray)
+                                            newSpawn.AntiCondition.NeededNearbyBlocks.Add(block.ToString());
+
+                                    newSpawn.AntiCondition.NeededBaseBlocks = new List<string>();
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.neededBaseBlocks") != null)
+                                        foreach (var block in spawnpool.SelectToken("spawns[" + i + "].anticondition.neededBaseBlocks") as JArray)
+                                            newSpawn.AntiCondition.NeededBaseBlocks.Add(block.ToString());
+
+                                    newSpawn.AntiCondition.Structures = new List<string>();
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.structures") != null)
+                                        foreach (var block in spawnpool.SelectToken("spawns[" + i + "].anticondition.structures") as JArray)
+                                            newSpawn.AntiCondition.Structures.Add(block.ToString());
+
+                                    newSpawn.AntiCondition.Biomes = new List<string>();
+                                    if (spawnpool.SelectToken("spawns[" + i + "].anticondition.biomes") != null)
+                                    {
+                                        List<string> biomes = new List<string>();
+                                        List<string> tags = new List<string>();
+
+                                        foreach (var block in spawnpool.SelectToken("spawns[" + i + "].anticondition.biomes") as JArray)
+                                        {
+                                            if (block.ToString().StartsWith('#'))
+                                                tags.Add(block.ToString());
+                                            else
+                                                biomes.Add(block.ToString());
+                                        }
+                                        while (tags.Count != 0)
+                                        {
+                                            string mod = tags[0].Substring(1).Split(":")[0];
+                                            string tag = tags[0].Substring(1).Split(":")[1];
+                                            string tagPath = Path.Combine(dexPath, mod, "biome_tag", tag + ".json");
+
+                                            if (File.Exists(tagPath))
+                                            {
+                                                JObject tagLookUp = JObject.Parse(File.ReadAllText(tagPath));
+                                                JArray tagValues = tagLookUp["values"] as JArray;
+
+                                                foreach (JToken value in tagValues)
+                                                {
+                                                    if (value.Type == JTokenType.String)
+                                                    {
+                                                        string tagString = value.ToString();
+                                                        if (tagString.StartsWith('#'))
+                                                            tags.Add(tagString);
+                                                        else
+                                                            biomes.Add(tagString);
+                                                    }
+                                                    else if (value.Type == JTokenType.Object)
+                                                    {
+                                                        JObject tagObject = (JObject)value;
+                                                        string tagID = tagObject["id"]?.ToString();
+                                                        if (tagID.StartsWith('#'))
+                                                            tags.Add(tagID);
+                                                        else
+                                                            biomes.Add(tagID);
+
+                                                    }
+                                                }
+                                                tags.Remove(tags[0]);
+                                            }
+                                            else
+                                            {
+                                                tags.Remove(tags[0]);
+                                            }
+                                        }
+                                        foreach (string biome in biomes)
+                                            newSpawn.AntiCondition.Biomes.Add(biome);
+                                        newSpawn.AntiCondition.Biomes = newSpawn.AntiCondition.Biomes.Distinct().ToList();
+                                        newSpawn.AntiCondition.Biomes.Sort();
+                                    }
+
+
+                                }
+
+                                if (newSpawn.Pokemon.Split(" ").Count() > 1)
+                                {
+                                    string potentialForm = newSpawn.Pokemon.Split(" ")[1];
+                                    bool foundForm = false;
+                                    foreach(App.Pokemon form in pkmn.Forms)
+                                        if (form.Form.ToLower() == potentialForm.ToLower())
+                                        {
+                                            form.Spawns.Add(newSpawn);
+                                            foundForm = true;
+                                            break;
+                                        }
+                                    if(!foundForm)
+                                        pkmn.Spawns.Add(newSpawn);
+                                }
+                                else
+                                    pkmn.Spawns.Add(newSpawn);
+
+
+                            }
+
+                            foreach (App.Pokemon form in pkmn.Forms)
+                                if (form.Spawns.Count == 0)
+                                    form.Spawns = pkmn.Spawns;
+
+                        }
                         pokemonList.Add(pkmn);
 
                     }
@@ -1680,6 +1986,368 @@ namespace MasterCobbleDexWorkingNew
 
 
                         }
+                    }
+
+                    grdSpawnsInfo.RowDefinitions.Clear();
+                    grdSpawnsInfo.Children.Clear();
+                    int spawncount = 0;
+
+                    if (FormSelected.Spawns != null)
+                    {
+                        foreach(App.Spawn spawn in FormSelected.Spawns)
+                        {
+
+                            RowDefinition rowID = new RowDefinition();
+                            GridLengthConverter grc = new GridLengthConverter();
+                            rowID.Height = (GridLength)grc.ConvertFromString("40");
+                            grdSpawnsInfo.RowDefinitions.Add(rowID);
+
+                            Label lblID = new Label();
+                            lblID.SetValue(Grid.RowProperty, spawncount);
+                            lblID.FontSize = 20;
+                            lblID.Content = ProperString(spawn.ID);
+                            grdSpawnsInfo.Children.Add(lblID);
+                            spawncount++;
+
+
+                            RowDefinition rowPokemon = new RowDefinition();
+                            rowPokemon.Height = (GridLength)grc.ConvertFromString("36");
+                            grdSpawnsInfo.RowDefinitions.Add(rowPokemon);
+
+                            Label lblPokemon = new Label();
+                            lblPokemon.SetValue(Grid.RowProperty, spawncount);
+                            lblPokemon.FontSize = 18;
+                            lblPokemon.FontWeight = FontWeights.Bold;
+                            lblPokemon.Content = ProperString(spawn.Pokemon);
+                            grdSpawnsInfo.Children.Add(lblPokemon);
+                            spawncount++;
+
+
+                            if(spawn.Presets.Count != 0)
+                            {
+                                RowDefinition rowPresets = new RowDefinition();
+                                rowPresets.Height = (GridLength)grc.ConvertFromString("36");
+                                grdSpawnsInfo.RowDefinitions.Add(rowPresets);
+
+                                Label lblPresets = new Label();
+                                lblPresets.SetValue(Grid.RowProperty, spawncount);
+                                lblPresets.FontSize = 18;
+                                lblPresets.Content = "Presets: ";
+                                foreach (string preset in spawn.Presets)
+                                    lblPresets.Content = lblPresets.Content + ProperString(preset) + ", ";
+                                lblPresets.Content = lblPresets.Content.ToString().Substring(0, lblPresets.Content.ToString().Length - 2);
+                                grdSpawnsInfo.Children.Add(lblPresets);
+                                spawncount++;
+                            }
+
+                            RowDefinition rowConditions = new RowDefinition();
+                            rowConditions.Height = GridLength.Auto;
+                            grdSpawnsInfo.RowDefinitions.Add(rowConditions);
+
+                            Grid columnsGrid = new Grid();
+                            columnsGrid.SetValue(Grid.RowProperty, spawncount);
+                            grdSpawnsInfo.Children.Add(columnsGrid);
+
+                            ColumnDefinition columnOne = new ColumnDefinition();
+                            columnOne.Width = new GridLength(1, GridUnitType.Star);
+                            columnsGrid.ColumnDefinitions.Add(columnOne);
+
+                            Label lblCondition = new Label();
+                            lblCondition.SetValue(Grid.ColumnProperty, 0);
+                            lblCondition.FontSize = 18;
+                            lblCondition.Content = "Conditions";
+                            columnsGrid.Children.Add(lblCondition);
+
+                            ColumnDefinition columnTwo = new ColumnDefinition();
+                            columnTwo.Width = new GridLength(1, GridUnitType.Star);
+                            columnsGrid.ColumnDefinitions.Add(columnTwo);
+
+                            Label lblAntiCondition = new Label();
+                            lblAntiCondition.SetValue(Grid.ColumnProperty, 1);
+                            lblAntiCondition.FontSize = 18;
+                            lblAntiCondition.Content = "Anti-Conditions";
+                            columnsGrid.Children.Add(lblAntiCondition);
+
+                            RowDefinition rowTitle = new RowDefinition();
+                            rowTitle.Height = (GridLength)grc.ConvertFromString("36");
+                            columnsGrid.RowDefinitions.Add(rowTitle);
+
+                            RowDefinition rowText = new RowDefinition();
+                            rowText.Height = GridLength.Auto;
+                            columnsGrid.RowDefinitions.Add(rowText);
+
+
+                            TextBlock blkConditions = new TextBlock();
+                            blkConditions.SetValue(Grid.RowProperty, 1);
+                            blkConditions.FontSize = 14;
+                            blkConditions.TextWrapping = TextWrapping.Wrap;
+                            columnsGrid.Children.Add(blkConditions);
+
+
+                            TextBlock blkAntiConditions = new TextBlock();
+                            blkAntiConditions.SetValue(Grid.RowProperty, 1);
+                            blkAntiConditions.SetValue(Grid.ColumnProperty, 1);
+                            blkAntiConditions.FontSize = 14;
+                            blkAntiConditions.TextWrapping = TextWrapping.Wrap;
+                            columnsGrid.Children.Add(blkAntiConditions);
+
+
+                            if (spawn.Condition.CanSeeSky != null)
+                            {
+                                if (spawn.Condition.CanSeeSky == true)
+                                    blkConditions.Inlines.Add(new Run("Can see the sky"));
+                                else
+                                    blkConditions.Inlines.Add(new Run("Can't see the sky"));
+
+                                blkConditions.Inlines.Add(new LineBreak());
+                            }
+
+                            if (spawn.Condition.MinSkyLight != null)
+                            {
+                                blkConditions.Inlines.Add(new Run("Minimun sky light of " + spawn.Condition.MinSkyLight));
+                                blkConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (spawn.Condition.MaxSkyLight != null)
+                            {
+                                blkConditions.Inlines.Add(new Run("Maximun sky light of " + spawn.Condition.MaxSkyLight));
+                                blkConditions.Inlines.Add(new LineBreak());
+                            }
+
+                            if (spawn.Condition.MinY != null)
+                            {
+                                blkConditions.Inlines.Add(new Run("Minimun Y of " + spawn.Condition.MinY));
+                                blkConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (spawn.Condition.MaxY != null)
+                            {
+                                blkConditions.Inlines.Add(new Run("Maximun Y of " + spawn.Condition.MaxY));
+                                blkConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (!String.IsNullOrWhiteSpace(spawn.Condition.TimeRange))
+                            {
+                                blkConditions.Inlines.Add(new Run("Time range of " + spawn.Condition.TimeRange));
+                                blkConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (!String.IsNullOrWhiteSpace(spawn.Condition.MoonPhase))
+                            {
+                                blkConditions.Inlines.Add(new Run("Moon Phase of " + spawn.Condition.MoonPhase));
+                                blkConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (spawn.Condition.IsRaining != null)
+                            {
+                                if (spawn.Condition.IsRaining == true)
+                                    blkConditions.Inlines.Add(new Run("Is Raining"));
+                                else
+                                    blkConditions.Inlines.Add(new Run("Isn't Raining"));
+
+                                blkConditions.Inlines.Add(new LineBreak());
+                            }
+                            if(spawn.Condition.NeededNearbyBlocks.Count != 0)
+                            {
+                                blkConditions.Inlines.Add(new Run("Needed Nearby Blocks:"));
+                                blkConditions.Inlines.Add(new LineBreak());
+                                foreach (string block in spawn.Condition.NeededNearbyBlocks)
+                                {
+                                    blkConditions.Inlines.Add(new Run("    -" + block));
+                                    blkConditions.Inlines.Add(new LineBreak());
+                                }
+                            }
+                            if (spawn.Condition.NeededBaseBlocks.Count != 0)
+                            {
+                                blkConditions.Inlines.Add(new Run("Needed Base Blocks:"));
+                                blkConditions.Inlines.Add(new LineBreak());
+                                foreach (string block in spawn.Condition.NeededBaseBlocks)
+                                {
+                                    blkConditions.Inlines.Add(new Run("    -" + block));
+                                    blkConditions.Inlines.Add(new LineBreak());
+                                }
+                            }
+                            if (spawn.Condition.Biomes.Count != 0)
+                            {
+                                blkConditions.Inlines.Add(new Run("In Biomes:"));
+                                blkConditions.Inlines.Add(new LineBreak());
+                                foreach (string biome in spawn.Condition.Biomes)
+                                {
+                                    blkConditions.Inlines.Add(new Run("    -" + biome));
+                                    blkConditions.Inlines.Add(new LineBreak());
+                                }
+                            }
+                            if (spawn.Condition.Structures.Count != 0)
+                            {
+                                blkConditions.Inlines.Add(new Run("In Structures:"));
+                                blkConditions.Inlines.Add(new LineBreak());
+                                foreach (string structure in spawn.Condition.Structures)
+                                {
+                                    blkConditions.Inlines.Add(new Run("    -" + structure));
+                                    blkConditions.Inlines.Add(new LineBreak());
+                                }
+                            }
+
+                            if (spawn.Condition.IsSlimeChunk != null)
+                            {
+                                if (spawn.Condition.IsSlimeChunk == true)
+                                    blkConditions.Inlines.Add(new Run("In a slime chunk"));
+                                else
+                                    blkConditions.Inlines.Add(new Run("Outside a slime chunk"));
+
+                                blkConditions.Inlines.Add(new LineBreak());
+                            }
+
+                            if (spawn.Condition.MinLureLevel != null)
+                            {
+                                blkConditions.Inlines.Add(new Run("Minimun lure level of " + spawn.Condition.MinLureLevel));
+                                blkConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (spawn.Condition.MaxLureLevel != null)
+                            {
+                                blkConditions.Inlines.Add(new Run("Maximun lure level of " + spawn.Condition.MaxLureLevel));
+                                blkConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (!String.IsNullOrWhiteSpace(spawn.Condition.RodType))
+                            {
+                                blkConditions.Inlines.Add(new Run("Rod Type of " + spawn.Condition.RodType));
+                                blkConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (!String.IsNullOrWhiteSpace(spawn.Condition.Bait))
+                            {
+                                blkConditions.Inlines.Add(new Run("Using bait of " + spawn.Condition.Bait));
+                                blkConditions.Inlines.Add(new LineBreak());
+                            }
+
+                            if(spawn.AntiCondition != null)
+                            {
+
+                            }
+
+                            if (spawn.AntiCondition.CanSeeSky != null)
+                            {
+                                if (spawn.AntiCondition.CanSeeSky == true)
+                                    blkAntiConditions.Inlines.Add(new Run("Can see the sky"));
+                                else
+                                    blkAntiConditions.Inlines.Add(new Run("Can't see the sky"));
+
+                                blkAntiConditions.Inlines.Add(new LineBreak());
+                            }
+
+                            if (spawn.AntiCondition.MinSkyLight != null)
+                            {
+                                blkAntiConditions.Inlines.Add(new Run("Minimun sky light of " + spawn.AntiCondition.MinSkyLight));
+                                blkAntiConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (spawn.AntiCondition.MaxSkyLight != null)
+                            {
+                                blkAntiConditions.Inlines.Add(new Run("Maximun sky light of " + spawn.AntiCondition.MaxSkyLight));
+                                blkAntiConditions.Inlines.Add(new LineBreak());
+                            }
+
+                            if (spawn.AntiCondition.MinY != null)
+                            {
+                                blkAntiConditions.Inlines.Add(new Run("Minimun Y of " + spawn.AntiCondition.MinY));
+                                blkAntiConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (spawn.AntiCondition.MaxY != null)
+                            {
+                                blkAntiConditions.Inlines.Add(new Run("Maximun Y of " + spawn.AntiCondition.MaxY));
+                                blkAntiConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (!String.IsNullOrWhiteSpace(spawn.AntiCondition.TimeRange))
+                            {
+                                blkAntiConditions.Inlines.Add(new Run("Time range of " + spawn.AntiCondition.TimeRange));
+                                blkAntiConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (!String.IsNullOrWhiteSpace(spawn.AntiCondition.MoonPhase))
+                            {
+                                blkAntiConditions.Inlines.Add(new Run("Moon Phase of " + spawn.AntiCondition.MoonPhase));
+                                blkAntiConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (spawn.AntiCondition.IsRaining != null)
+                            {
+                                if (spawn.AntiCondition.IsRaining == true)
+                                    blkAntiConditions.Inlines.Add(new Run("Is Raining"));
+                                else
+                                    blkAntiConditions.Inlines.Add(new Run("Isn't Raining"));
+
+                                blkAntiConditions.Inlines.Add(new LineBreak());
+                            }
+                            if(spawn.AntiCondition.NeededNearbyBlocks != null)
+                                if (spawn.AntiCondition.NeededNearbyBlocks.Count != 0)
+                                {
+                                    blkAntiConditions.Inlines.Add(new Run("Needed Nearby Blocks:"));
+                                    blkAntiConditions.Inlines.Add(new LineBreak());
+                                    foreach (string block in spawn.AntiCondition.NeededNearbyBlocks)
+                                    {
+                                        blkAntiConditions.Inlines.Add(new Run("    -" + block));
+                                        blkAntiConditions.Inlines.Add(new LineBreak());
+                                    }
+                                }
+                            if (spawn.AntiCondition.NeededBaseBlocks != null)
+                                if (spawn.AntiCondition.NeededBaseBlocks.Count != 0)
+                                {
+                                    blkAntiConditions.Inlines.Add(new Run("Needed Base Blocks:"));
+                                    blkAntiConditions.Inlines.Add(new LineBreak());
+                                    foreach (string block in spawn.AntiCondition.NeededBaseBlocks)
+                                    {
+                                        blkAntiConditions.Inlines.Add(new Run("    -" + block));
+                                        blkAntiConditions.Inlines.Add(new LineBreak());
+                                    }
+                                }
+                            if (spawn.AntiCondition.Biomes != null)
+                                if (spawn.AntiCondition.Biomes.Count != 0)
+                                {
+                                    blkAntiConditions.Inlines.Add(new Run("In Biomes:"));
+                                    blkAntiConditions.Inlines.Add(new LineBreak());
+                                    foreach (string biome in spawn.AntiCondition.Biomes)
+                                    {
+                                        blkAntiConditions.Inlines.Add(new Run("    -" + biome));
+                                        blkAntiConditions.Inlines.Add(new LineBreak());
+                                    }
+                                }
+                            if (spawn.AntiCondition.Structures != null)
+                                if (spawn.AntiCondition.Structures.Count != 0)
+                                {
+                                    blkAntiConditions.Inlines.Add(new Run("In Structures:"));
+                                    blkAntiConditions.Inlines.Add(new LineBreak());
+                                    foreach (string structure in spawn.AntiCondition.Structures)
+                                    {
+                                        blkAntiConditions.Inlines.Add(new Run("    -" + structure));
+                                        blkAntiConditions.Inlines.Add(new LineBreak());
+                                    }
+                                }
+
+                            if (spawn.AntiCondition.IsSlimeChunk != null)
+                            {
+                                if (spawn.AntiCondition.IsSlimeChunk == true)
+                                    blkAntiConditions.Inlines.Add(new Run("In a slime chunk"));
+                                else
+                                    blkAntiConditions.Inlines.Add(new Run("Outside a slime chunk"));
+
+                                blkAntiConditions.Inlines.Add(new LineBreak());
+                            }
+
+                            if (spawn.AntiCondition.MinLureLevel != null)
+                            {
+                                blkAntiConditions.Inlines.Add(new Run("Minimun lure level of " + spawn.AntiCondition.MinLureLevel));
+                                blkAntiConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (spawn.AntiCondition.MaxLureLevel != null)
+                            {
+                                blkAntiConditions.Inlines.Add(new Run("Maximun lure level of " + spawn.AntiCondition.MaxLureLevel));
+                                blkAntiConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (!String.IsNullOrWhiteSpace(spawn.AntiCondition.RodType))
+                            {
+                                blkAntiConditions.Inlines.Add(new Run("Rod Type of " + spawn.AntiCondition.RodType));
+                                blkAntiConditions.Inlines.Add(new LineBreak());
+                            }
+                            if (!String.IsNullOrWhiteSpace(spawn.AntiCondition.Bait))
+                            {
+                                blkAntiConditions.Inlines.Add(new Run("Using bait of " + spawn.AntiCondition.Bait));
+                                blkAntiConditions.Inlines.Add(new LineBreak());
+                            }
+
+                            spawncount++;
+                        }
+
                     }
                 }
             }
