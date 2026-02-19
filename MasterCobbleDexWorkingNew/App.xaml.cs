@@ -43,11 +43,33 @@ namespace MasterCobbleDexWorkingNew
         {
             public string AbilityName { get; set; }
             public bool Hidden { get; set; }
+            public string Description { get; set; }
+        }
+        public class AbilityInfo
+        {
+            public string Name { get; set; }
+            public string Description { get; set; }
         }
         public class Move
         {
             public string MoveName { get; set; }
             public string MoveType { get; set; }
+            public string Accuracy { get; set; }
+            public string BasePower { get; set; }
+            public string Category { get; set; }
+            public string PP { get; set; }
+            public string Type { get; set; }
+            public string Description { get; set; }
+        }
+        public class MoveInfo
+        {
+            public string Name { get; set; }
+            public string Accuracy { get; set; }
+            public string BasePower { get; set; }
+            public string Category { get; set; }
+            public string PP { get; set; }
+            public string Type { get; set; }
+            public string Description { get; set; }
         }
         public class EVYield
         {
