@@ -258,6 +258,8 @@ namespace MasterCobbleDexWorkingNew
                 string masterPath = Path.Combine(dexPath, "master");
                 string masterSpeciesPath = Path.Combine(masterPath, "species");
                 string masterSpawnPoolPath = Path.Combine(masterPath, "spawnpool");
+                string masterMovesPath = Path.Combine(masterPath, "moves");
+                string masterAbilitiesPath = Path.Combine(masterPath, "abilities");
                 Directory.CreateDirectory(masterPath);
 
                 foreach (var file in Directory.EnumerateFiles(masterPath))
@@ -272,6 +274,8 @@ namespace MasterCobbleDexWorkingNew
 
                 Directory.CreateDirectory(masterSpeciesPath);
                 Directory.CreateDirectory(masterSpawnPoolPath);
+                Directory.CreateDirectory(masterMovesPath);
+                Directory.CreateDirectory(masterAbilitiesPath);
 
                 if (!Directory.Exists(Path.Combine(dexPath, "cobblemon")))
                 {
@@ -292,6 +296,16 @@ namespace MasterCobbleDexWorkingNew
                 foreach (string file in Directory.EnumerateFiles(Path.Combine(dexPath, "cobblemon", "spawn_pool_world"), "*.json"))
                 {
                     string destPath = Path.Combine(masterSpawnPoolPath, Path.GetFileName(file));
+                    File.Copy(file, destPath, overwrite: true);
+                }
+                foreach (string file in Directory.EnumerateFiles(Path.Combine(dexPath, "cobblemon", "moves"), "*.json"))
+                {
+                    string destPath = Path.Combine(masterMovesPath, Path.GetFileName(file));
+                    File.Copy(file, destPath, overwrite: true);
+                }
+                foreach (string file in Directory.EnumerateFiles(Path.Combine(dexPath, "cobblemon", "abilities"), "*.json"))
+                {
+                    string destPath = Path.Combine(masterAbilitiesPath, Path.GetFileName(file));
                     File.Copy(file, destPath, overwrite: true);
                 }
 
@@ -345,6 +359,17 @@ namespace MasterCobbleDexWorkingNew
                                 }
                             }
                         }
+                        foreach (string file in Directory.EnumerateFiles(Path.Combine(dexPath, folderName, "moves"), "*.json"))
+                        {
+                            string destPath = Path.Combine(masterMovesPath, Path.GetFileName(file));
+                            File.Copy(file, destPath, overwrite: true);
+                        }
+
+                        foreach (string file in Directory.EnumerateFiles(Path.Combine(dexPath, folderName, "abilities"), "*.json"))
+                        {
+                            string destPath = Path.Combine(masterAbilitiesPath, Path.GetFileName(file));
+                            File.Copy(file, destPath, overwrite: true);
+                        }
 
 
                     }
@@ -354,6 +379,7 @@ namespace MasterCobbleDexWorkingNew
                 RefreshDataGrid();
                 grdEdit.Visibility = Visibility.Collapsed;
                 grdDex.Visibility = Visibility.Visible;
+                btnPanelSwitch.Content = "Edit Loaded Content";
 
 
             }
@@ -477,6 +503,8 @@ namespace MasterCobbleDexWorkingNew
                 dtgPokemon.ItemsSource = null;
                 string masterSpeciesPath = Path.Combine(dexPath, "master", "species");
                 string masterSpawnPoolPath = Path.Combine(dexPath, "master", "spawnpool");
+                string masterMovePath = Path.Combine(dexPath, "master", "moves");
+                string masterAbilityPath = Path.Combine(dexPath, "master", "abilities");
                 List<string> fileNames = new List<string>();
                 try
                 {
@@ -549,6 +577,11 @@ namespace MasterCobbleDexWorkingNew
                                 newAbility.AbilityName = abilityParts[0];
                                 newAbility.Hidden = false;
                             }
+                            if (File.Exists(Path.Combine(masterAbilityPath, newAbility.AbilityName + ".json")))
+                            {
+                                JObject moveJSON = JObject.Parse(File.ReadAllText(Path.Combine(masterAbilityPath, newAbility.AbilityName + ".json")));
+                                newAbility.Description = moveJSON.SelectToken("Description")?.ToString();
+                            }
                             pkmn.Abilities.Add(newAbility);
                         }
                         pkmn.EggGroups = new List<string>();
@@ -601,6 +634,16 @@ namespace MasterCobbleDexWorkingNew
                             List<string> moveParts = move.ToString().Split(':').ToList();
                             newMove.MoveName = moveParts[1];
                             newMove.MoveType = moveParts[0];
+                            if(File.Exists(Path.Combine(masterMovePath, newMove.MoveName + ".json")))
+                            {
+                                JObject moveJSON = JObject.Parse(File.ReadAllText(Path.Combine(masterMovePath, newMove.MoveName + ".json")));
+                                newMove.Accuracy = moveJSON.SelectToken("Accuracy")?.ToString().Trim();
+                                newMove.BasePower = moveJSON.SelectToken("BasePower")?.ToString().Trim();
+                                newMove.Category = moveJSON.SelectToken("Category")?.ToString().Trim();
+                                newMove.PP = moveJSON.SelectToken("PP")?.ToString().Trim();
+                                newMove.Type = moveJSON.SelectToken("Type")?.ToString().Trim();
+                                newMove.Description = moveJSON.SelectToken("Description")?.ToString();
+                            }
                             pkmn.Moves.Add(newMove);
                         }
                         pkmn.Evolutions = new List<App.Evolution>();
@@ -845,6 +888,11 @@ namespace MasterCobbleDexWorkingNew
                                                     newAbility.AbilityName = abilityParts[0];
                                                     newAbility.Hidden = false;
                                                 }
+                                                if (File.Exists(Path.Combine(masterAbilityPath, newAbility.AbilityName + ".json")))
+                                                {
+                                                    JObject moveJSON = JObject.Parse(File.ReadAllText(Path.Combine(masterAbilityPath, newAbility.AbilityName + ".json")));
+                                                    newAbility.Description = moveJSON.SelectToken("Description")?.ToString();
+                                                }
                                                 pkmnForm.Abilities.Add(newAbility);
                                             }
 
@@ -891,6 +939,16 @@ namespace MasterCobbleDexWorkingNew
                                                 List<string> moveParts = move.ToString().Split(':').ToList();
                                                 newMove.MoveName = moveParts[1];
                                                 newMove.MoveType = moveParts[0];
+                                                if (File.Exists(Path.Combine(masterMovePath, newMove.MoveName + ".json")))
+                                                {
+                                                    JObject moveJSON = JObject.Parse(File.ReadAllText(Path.Combine(masterMovePath, newMove.MoveName + ".json")));
+                                                    newMove.Accuracy = moveJSON.SelectToken("Accuracy")?.ToString().Trim();
+                                                    newMove.BasePower = moveJSON.SelectToken("BasePower")?.ToString().Trim();
+                                                    newMove.Category = moveJSON.SelectToken("Category")?.ToString().Trim();
+                                                    newMove.PP = moveJSON.SelectToken("PP")?.ToString().Trim();
+                                                    newMove.Type = moveJSON.SelectToken("Type")?.ToString().Trim();
+                                                    newMove.Description = moveJSON.SelectToken("Description")?.ToString();
+                                                }
                                                 pkmnForm.Moves.Add(newMove);
                                             }
                                         }
@@ -1722,43 +1780,66 @@ namespace MasterCobbleDexWorkingNew
 
                     string abilities = "";
                     string hiddenAbilities = "";
+                    grdAbilities.Children.Clear();
+                    grdAbilities.RowDefinitions.Clear();
+                    int abilityCount = 0;
                     if (FormSelected.Abilities != null && FormSelected.Abilities.Count() != 0)
                     {
                         foreach (App.Ability ability in FormSelected.Abilities)
                         {
+                            RowDefinition row = new RowDefinition();
+                            row.Height = new GridLength(1, GridUnitType.Star);
+                            grdAbilities.RowDefinitions.Add(row);
+                            Label abilityLabel = new Label();
+                            abilityLabel.Content = ability.AbilityName;
+                            abilityLabel.Cursor = Cursors.Hand;
+                            abilityLabel.MouseDown += AbilityLabel_MouseDown;
+                            abilityLabel.SetValue(Grid.RowProperty, abilityCount);
+                            grdAbilities.Children.Add(abilityLabel);
                             if (ability.Hidden)
                             {
-                                hiddenAbilities = hiddenAbilities + ", " + ProperString(ability.AbilityName);
+                                Label hiddenLabel = new Label();
+                                hiddenLabel.Content = "(H)";
+                                hiddenLabel.SetValue(Grid.RowProperty, abilityCount);
+                                hiddenLabel.SetValue(Grid.ColumnProperty, 1);
+                                grdAbilities.Children.Add(hiddenLabel);
                             }
-                            else
-                            {
-                                abilities = abilities + ", " + ProperString(ability.AbilityName);
-                            }
+                            abilityCount++;
                         }
                     }
                     else
                     {
                         foreach (App.Ability ability in BackupForm.Abilities)
                         {
+                            RowDefinition row = new RowDefinition();
+                            row.Height = new GridLength(1, GridUnitType.Star);
+                            grdAbilities.RowDefinitions.Add(row);
+                            Label abilityLabel = new Label();
+                            abilityLabel.Content = ability.AbilityName;
+                            abilityLabel.Cursor = Cursors.Hand;
+                            abilityLabel.MouseDown += AbilityLabel_MouseDown;
+                            abilityLabel.SetValue(Grid.RowProperty, abilityCount);
+                            grdAbilities.Children.Add(abilityLabel);
                             if (ability.Hidden)
                             {
-                                hiddenAbilities = hiddenAbilities + ", " + ProperString(ability.AbilityName);
+                                Label hiddenLabel = new Label();
+                                hiddenLabel.Content = "(H)";
+                                hiddenLabel.SetValue(Grid.RowProperty, abilityCount);
+                                hiddenLabel.SetValue(Grid.ColumnProperty, 1);
+                                grdAbilities.Children.Add(hiddenLabel);
                             }
-                            else
-                            {
-                                abilities = abilities + ", " + ProperString(ability.AbilityName);
-                            }
+                            abilityCount++;
                         }
 
                     }
 
+                    blkAbilityInfo.Text = "";
+
                     if (!String.IsNullOrEmpty(abilities))
                         abilities = abilities.Substring(2);
-                    lblAbilities.Content = abilities;
 
                     if (!String.IsNullOrEmpty(hiddenAbilities))
                         hiddenAbilities = hiddenAbilities.Substring(2);
-                    lblHiddenAbilities.Content = hiddenAbilities;
 
                     if (FormSelected.Moves != null && FormSelected.Moves.Count() != 0)
                     {
@@ -2386,6 +2467,25 @@ namespace MasterCobbleDexWorkingNew
 
         }
 
+        private void AbilityLabel_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                Label abilityLabel = (Label)sender;
+                int row = Grid.GetRow(abilityLabel);
+                Pokemon selectedPokemon = dtgPokemon.SelectedItem as Pokemon;
+                if (cboForm.SelectedIndex != 0)
+                    if (selectedPokemon.Forms[cboForm.SelectedIndex - 1].Abilities.Count != 0)
+                        selectedPokemon = selectedPokemon.Forms[cboForm.SelectedIndex - 1];
+                blkAbilityInfo.Text = "";
+                blkAbilityInfo.Inlines.Add(new Run(selectedPokemon.Abilities[row].Description));
+            }
+            catch
+            {
+                MessageBox.Show("ability label error");
+            }
+        }
+
         private string ProperString(string word)
         {
 
@@ -2471,43 +2571,59 @@ namespace MasterCobbleDexWorkingNew
         private void btnRemoveDeselected_Click(object sender, RoutedEventArgs e)
         {
 
-            MessageBoxResult result = MessageBox.Show("Do you want to remove all deselected addons?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.No)
+            try
             {
-                return;
-            }
-
-            foreach (CheckBox chkbx in modCheckboxes)
-            {
-                if(chkbx.IsChecked == false)
+                MessageBoxResult result = MessageBox.Show("Do you want to remove all deselected addons?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.No)
                 {
-                    Directory.Delete(Path.Combine(dexPath, chkbx.Content.ToString()), true);
+                    return;
                 }
+
+                foreach (CheckBox chkbx in modCheckboxes)
+                {
+                    if (chkbx.IsChecked == false)
+                    {
+                        Directory.Delete(Path.Combine(dexPath, chkbx.Content.ToString()), true);
+                    }
+                }
+                CountFolders();
+
             }
-            CountFolders();
+            catch
+            {
+                MessageBox.Show("remove deselected error");
+            }
         }
 
         private void btnChangeDirectory_Click(object sender, RoutedEventArgs e)
         {
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.IsFolderPicker = true;
-
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            try
             {
-                string folderPath = dialog.FileName;
-                string keyPath = @"Software\MasterCobbleDex";
-                using RegistryKey key = Registry.CurrentUser.OpenSubKey(keyPath, true);
-                string sourcePath = dexPath;
-                string destinationPath = Path.Combine(folderPath, "MasterCobbleDex");
-                CopyFolder(sourcePath, destinationPath);
-                key.SetValue("DexPath", folderPath);
-                dexPath = Path.Combine(folderPath, "MasterCobbleDex");
-                RefreshDataGrid();
-                Directory.Delete(sourcePath, true);
-                key.Close();
+                CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+                dialog.IsFolderPicker = true;
+
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    string folderPath = dialog.FileName;
+                    string keyPath = @"Software\MasterCobbleDex";
+                    using RegistryKey key = Registry.CurrentUser.OpenSubKey(keyPath, true);
+                    string sourcePath = dexPath;
+                    string destinationPath = Path.Combine(folderPath, "MasterCobbleDex");
+                    copyFolder(sourcePath, destinationPath);
+                    key.SetValue("DexPath", folderPath);
+                    dexPath = Path.Combine(folderPath, "MasterCobbleDex");
+                    RefreshDataGrid();
+                    Directory.Delete(sourcePath, true);
+                    key.Close();
+                }
+
+            }
+            catch
+            {
+                MessageBox.Show("change directory error");
             }
         }
-        public static void CopyFolder(string sourceFolder, string destinationFolder)
+        public static void copyFolder(string sourceFolder, string destinationFolder)
         {
             Directory.CreateDirectory(destinationFolder);
 
@@ -2524,460 +2640,119 @@ namespace MasterCobbleDexWorkingNew
                 string folderName = Path.GetFileName(folder);
                 string destFolder = Path.Combine(destinationFolder, folderName);
 
-                CopyFolder(folder, destFolder);
+                copyFolder(folder, destFolder);
             }
         }
 
         private void chkAll_Click(object sender, RoutedEventArgs e)
         {
-            if(chkAll.IsChecked == true)
-                foreach (CheckBox chkbx in modCheckboxes)
-                    chkbx.IsChecked = true;
-            else
-                foreach (CheckBox chkbx in modCheckboxes)
-                    chkbx.IsChecked = false;
-
+            try
+            {
+                if (chkAll.IsChecked == true)
+                    foreach (CheckBox chkbx in modCheckboxes)
+                        chkbx.IsChecked = true;
+                else
+                    foreach (CheckBox chkbx in modCheckboxes)
+                        chkbx.IsChecked = false;
+            }
+            catch
+            {
+                MessageBox.Show("checkbox all error");
+            }
         }
 
         private void importCobblemonShowdown(string filePath)
         {
-
-
-            using (ZipArchive zip = ZipFile.OpenRead(filePath))
+            try
             {
-
-                foreach (ZipArchiveEntry entry in zip.Entries)
+                using (ZipArchive zip = ZipFile.OpenRead(filePath))
                 {
-                    if (!string.IsNullOrEmpty(entry.FullName) && entry.FullName.StartsWith("data/") && entry.FullName.Contains("showdown") && entry.FullName.EndsWith(".zip"))
+
+                    foreach (ZipArchiveEntry entry in zip.Entries)
                     {
-                        string destinationPath = Path.Combine(dexPath, "cobblemon", entry.Name);
-                        using (var entryStream = entry.Open())
-                        using (var fileStream = File.Create(destinationPath))
+                        if (!string.IsNullOrEmpty(entry.FullName) && entry.FullName.StartsWith("data/") && entry.FullName.Contains("showdown") && entry.FullName.EndsWith(".zip"))
                         {
-                            entryStream.CopyTo(fileStream);
+                            string destinationPath = Path.Combine(dexPath, "cobblemon", entry.Name);
+                            using (var entryStream = entry.Open())
+                            using (var fileStream = File.Create(destinationPath))
+                            {
+                                entryStream.CopyTo(fileStream);
+                            }
                         }
                     }
+
+                }
+                Directory.CreateDirectory(Path.Combine(dexPath, "cobblemon", "js"));
+                using (ZipArchive zip = ZipFile.OpenRead(Path.Combine(dexPath, "cobblemon", "showdown.zip")))
+                {
+
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (!string.IsNullOrEmpty(entry.FullName))
+                        {
+                            switch (entry.FullName)
+                            {
+                                case "data/moves.js":
+                                    string destinationPath = Path.Combine(dexPath, "cobblemon", "js", entry.Name);
+                                    using (var entryStream = entry.Open())
+                                    using (var fileStream = File.Create(destinationPath))
+                                    {
+                                        entryStream.CopyTo(fileStream);
+                                    }
+                                    break;
+                                case "data/text/moves.js":
+                                    string destinationPath2 = Path.Combine(dexPath, "cobblemon", "js", "movesText.js");
+                                    using (var entryStream = entry.Open())
+                                    using (var fileStream = File.Create(destinationPath2))
+                                    {
+                                        entryStream.CopyTo(fileStream);
+                                    }
+                                    break;
+                                case "data/text/abilities.js":
+                                    string destinationPath3 = Path.Combine(dexPath, "cobblemon", "js", "abilities.js");
+                                    using (var entryStream = entry.Open())
+                                    using (var fileStream = File.Create(destinationPath3))
+                                    {
+                                        entryStream.CopyTo(fileStream);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+
                 }
 
             }
-            Directory.CreateDirectory(Path.Combine(dexPath, "cobblemon", "js"));
-            using (ZipArchive zip = ZipFile.OpenRead(Path.Combine(dexPath, "cobblemon", "showdown.zip")))
+            catch
             {
-
-                foreach (ZipArchiveEntry entry in zip.Entries)
-                {
-                    if (!string.IsNullOrEmpty(entry.FullName))
-                    {
-                        switch (entry.FullName)
-                        {
-                            case "data/moves.js":
-                                string destinationPath = Path.Combine(dexPath, "cobblemon", "js", entry.Name);
-                                using (var entryStream = entry.Open())
-                                using (var fileStream = File.Create(destinationPath))
-                                {
-                                    entryStream.CopyTo(fileStream);
-                                }
-                                break;
-                            case "data/text/moves.js":
-                                string destinationPath2 = Path.Combine(dexPath, "cobblemon", "js", "movesText.js");
-                                using (var entryStream = entry.Open())
-                                using (var fileStream = File.Create(destinationPath2))
-                                {
-                                    entryStream.CopyTo(fileStream);
-                                }
-                                break;
-                            case "data/text/abilities.js":
-                                string destinationPath3 = Path.Combine(dexPath, "cobblemon", "js", "abilities.js");
-                                using (var entryStream = entry.Open())
-                                using (var fileStream = File.Create(destinationPath3))
-                                {
-                                    entryStream.CopyTo(fileStream);
-                                }
-                                break;
-                        }
-                    }
-                }
-
+                MessageBox.Show("import cobblemon showdown error");
             }
+
         }
         private void importCobblemonMoves()
         {
 
-
-            List<MoveInfo> AllMoves = new List<MoveInfo>();
-            MoveInfo currentInfo = new MoveInfo();
-
-            //move stats
-            string moveText = File.ReadAllText(Path.Combine(dexPath, "cobblemon", "js", "moves.js"));
-
-            string marker = "const Moves =";
-            int startIndex = moveText.IndexOf(marker);
-
-            if (startIndex == -1)
-                startIndex = 0;
-
-            int braceStart = moveText.IndexOf('{', startIndex);
-
-            if (braceStart == -1)
-                throw new Exception("Could not find opening brace");
-
-
-            string nameEntry = "";
-            string accuracyEntry = "";
-            bool accuracySearch = false;
-            string basePowerEntry = "";
-            bool basePowerSearch = false;
-            string categoryEntry = "";
-            bool categorySearch = false;
-            string ppEntry = "";
-            bool ppSearch = false;
-            string typeEntry = "";
-            bool typeSearch = false;
-
-
-            int braceCount = 0;
-            for (int i = braceStart; i < moveText.Length; i++)
+            try
             {
-                if (moveText[i] == '{')
-                    braceCount++;
+                List<MoveInfo> AllMoves = new List<MoveInfo>();
+                MoveInfo currentInfo = new MoveInfo();
 
-                if (moveText[i] == '}')
-                    braceCount--;
+                //move stats
+                string moveText = File.ReadAllText(Path.Combine(dexPath, "cobblemon", "js", "moves.js"));
 
-                if (braceCount == 1)
-                    nameEntry = nameEntry + moveText[i];
+                string marker = "const Moves =";
+                int startIndex = moveText.IndexOf(marker);
 
-                if (accuracySearch)
-                {
-                    if ((moveText[i] == '}' || moveText[i] == ',') && !string.IsNullOrEmpty(accuracyEntry))
-                    {
-                        if (string.IsNullOrEmpty(currentInfo.Accuracy))
-                            currentInfo.Accuracy = accuracyEntry.Replace("ccuracy:", "").Replace(" ", "");
-                        accuracyEntry = "";
-                        accuracySearch = false;
-                    }
-                    else
-                        accuracyEntry = accuracyEntry + moveText[i];
-                }
-                if (basePowerSearch)
-                {
-                    if ((moveText[i] == '}' || moveText[i] == ',') && !string.IsNullOrEmpty(basePowerEntry))
-                    {
-                        if (string.IsNullOrEmpty(currentInfo.BasePower))
-                            currentInfo.BasePower = basePowerEntry.Replace("asePower:", "").Replace(" ", "");
-                        basePowerEntry = "";
-                        basePowerSearch = false;
-                    }
-                    else
-                        basePowerEntry = basePowerEntry + moveText[i];
-                }
-                if (categorySearch)
-                {
-                    if ((moveText[i] == '}' || moveText[i] == ',') && !string.IsNullOrEmpty(categoryEntry))
-                    {
-                        if (string.IsNullOrEmpty(currentInfo.Category))
-                            currentInfo.Category = categoryEntry.Replace("ategory:", "").Replace("\"", "").Replace(" ", "");
-                        categoryEntry = "";
-                        categorySearch = false;
-                    }
-                    else
-                        categoryEntry = categoryEntry + moveText[i];
-                }
-                if (ppSearch)
-                {
-                    if ((moveText[i] == '}' || moveText[i] == ',') && !string.IsNullOrEmpty(ppEntry))
-                    {
-                        if (string.IsNullOrEmpty(currentInfo.PP))
-                            currentInfo.PP = ppEntry.Replace("p:", "").Replace(" ", "");
-                        ppEntry = "";
-                        ppSearch = false;
-                    }
-                    else
-                        ppEntry = ppEntry + moveText[i];
-                }
-                if (typeSearch)
-                {
-                    if ((moveText[i] == '}' || moveText[i] == ',') && !string.IsNullOrEmpty(typeEntry))
-                    {
-                        currentInfo.Type = typeEntry.Replace("ype:", "").Replace("\"", "").Replace(" ", "");
-                        typeEntry = "";
-                        typeSearch = false;
-                    }
-                    else
-                        typeEntry = typeEntry + moveText[i];
-                }
+                if (startIndex == -1)
+                    startIndex = 0;
 
-                if (braceCount == 2 && !string.IsNullOrEmpty(nameEntry))
-                {
-                    string[] bannedPhrases = { "{", "}", "\n", "\"", ":", ",", " " };
-                    foreach (string phrase in bannedPhrases)
-                        nameEntry = nameEntry.Replace(phrase, "");
-                    nameEntry.Trim();
-                    currentInfo.Name = nameEntry;
-                    nameEntry = "";
-                }
-                else if (braceCount == 2 && moveText[i] == 'a')
-                {
-                    int length = 9;
-                    if (i + 9 >= moveText.Length)
-                        length = i + 8 - moveText.Length;
-                    if (moveText.Substring(i, length) == "accuracy:")
-                        accuracySearch = true;
-
-                }
-                else if (braceCount == 2 && moveText[i] == 'b')
-                {
-                    int length = 9;
-                    if (i + 9 >= moveText.Length)
-                        length = i + 8 - moveText.Length;
-                    if (moveText.Substring(i, length) == "basePower")
-                        basePowerSearch = true;
-
-                }
-                else if (braceCount == 2 && moveText[i] == 'c')
-                {
-                    int length = 9;
-                    if (i + 9 >= moveText.Length)
-                        length = i + 8 - moveText.Length;
-                    if (moveText.Substring(i, length) == "category:")
-                        categorySearch = true;
-
-                }
-                else if (braceCount == 2 && moveText[i] == 'p')
-                {
-                    int length = 3;
-                    if (i + 3 >= moveText.Length)
-                        length = i + 2 - moveText.Length;
-                    if (moveText.Substring(i, length) == "pp:")
-                        ppSearch = true;
-
-                }
-                else if (braceCount == 2 && moveText[i] == 't')
-                {
-                    int length = 5;
-                    if (i + 5 >= moveText.Length)
-                        length = i + 4 - moveText.Length;
-                    if (moveText.Substring(i, length) == "type:")
-                        typeSearch = true;
-
-                }
-                if (moveText[i] == '}' && braceCount == 1)
-                {
-                    AllMoves.Add(currentInfo);
-                    currentInfo = new MoveInfo();
-                }
-
-            }
-
-
-            //move desc
-
-            string moveDescText = File.ReadAllText(Path.Combine(dexPath, "cobblemon", "js", "movesText.js"));
-
-            string markerDesc = "const MovesText =";
-            int startIndexDesc = moveDescText.IndexOf(markerDesc);
-
-            if (startIndexDesc == -1)
-                startIndexDesc = 0;
-
-            int braceStartDesc = moveDescText.IndexOf('{', startIndexDesc);
-
-            if (braceStartDesc == -1)
-                throw new Exception("Could not find opening brace");
-
-
-            string nameEntryDesc = "";
-            string shortDescEntry = "";
-            bool shortDescSearch = false;
-
-
-            int braceCountDesc = 0;
-            for (int i = braceStartDesc; i < moveDescText.Length; i++)
-            {
-                if (moveDescText[i] == '{')
-                    braceCountDesc++;
-
-                if (moveDescText[i] == '}')
-                    braceCountDesc--;
-
-                if (braceCountDesc == 1)
-                    nameEntryDesc = nameEntryDesc + moveDescText[i];
-
-                if (shortDescSearch)
-                {
-                    if ((moveDescText[i] == '"') && !string.IsNullOrEmpty(shortDescEntry))
-                    {
-                        shortDescEntry.Trim();
-                        shortDescSearch = false;
-                    }
-                    else
-                        shortDescEntry = shortDescEntry + moveDescText[i];
-                }
-
-                if (braceCountDesc == 2 && !string.IsNullOrEmpty(nameEntryDesc))
-                {
-                    string[] bannedPhrases = { "{", "}", "\n", "\"", ":", ",", " " };
-                    foreach (string phrase in bannedPhrases)
-                        nameEntryDesc = nameEntryDesc.Replace(phrase, "");
-                    nameEntryDesc.Trim();
-                }
-
-                if (braceCountDesc == 2 && moveDescText[i] == '"')
-                {
-                    string t = moveDescText.Substring(i - 11, 12);
-                    if (moveDescText.Substring(i - 11, 12) == "shortDesc: \"")
-                        shortDescSearch = true;
-
-                }
-
-                if (moveDescText[i] == '}' && braceCountDesc == 1)
-                {
-                    MoveInfo foundMove = AllMoves.FirstOrDefault(m => m.Name == nameEntryDesc.Replace("}", ""));
-                    if (foundMove != null)
-                        foundMove.Description = shortDescEntry;
-                    nameEntryDesc = "";
-                    shortDescEntry = "";
-                }
-
-            }
-
-            foreach (MoveInfo move in AllMoves)
-            {
-                string moveJson = JsonSerializer.Serialize(move);
-                File.WriteAllText(Path.Combine(dexPath, "cobblemon", "moves", move.Name + ".json"), moveJson);
-            }
-        }
-        private void importCobblemonAbilities()
-        {
-            List<AbilityInfo> AllAbilities = new List<AbilityInfo>();
-            string abilityDescText = File.ReadAllText(Path.Combine(dexPath, "cobblemon", "js", "abilities.js"));
-
-            string markerDesc = "const AbilitiesText =";
-            int startIndexDesc = abilityDescText.IndexOf(markerDesc);
-
-            if (startIndexDesc == -1)
-                startIndexDesc = 0;
-
-            int braceStartDesc = abilityDescText.IndexOf('{', startIndexDesc);
-
-            if (braceStartDesc == -1)
-                throw new Exception("Could not find opening brace");
-
-
-            string nameEntryDesc = "";
-            string shortDescEntry = "";
-            bool shortDescSearch = false;
-
-
-            int braceCountDesc = 0;
-            for (int i = braceStartDesc; i < abilityDescText.Length; i++)
-            {
-                if (abilityDescText[i] == '{')
-                    braceCountDesc++;
-
-                if (abilityDescText[i] == '}')
-                    braceCountDesc--;
-
-                if (braceCountDesc == 1)
-                    nameEntryDesc = nameEntryDesc + abilityDescText[i];
-
-                if (shortDescSearch)
-                {
-                    if ((abilityDescText[i] == '"') && !string.IsNullOrEmpty(shortDescEntry))
-                    {
-                        shortDescEntry.Trim();
-                        shortDescSearch = false;
-                    }
-                    else
-                        shortDescEntry = shortDescEntry + abilityDescText[i];
-                }
-
-                if (braceCountDesc == 2 && !string.IsNullOrEmpty(nameEntryDesc))
-                {
-                    string[] bannedPhrases = { "{", "}", "\n", "\"", ":", ",", " " };
-                    foreach (string phrase in bannedPhrases)
-                        nameEntryDesc = nameEntryDesc.Replace(phrase, "");
-                    nameEntryDesc.Trim();
-                }
-
-                if (braceCountDesc == 2 && abilityDescText[i] == '"')
-                {
-                    string t = abilityDescText.Substring(i - 11, 12);
-                    if (abilityDescText.Substring(i - 11, 12) == "shortDesc: \"")
-                        shortDescSearch = true;
-
-                }
-
-                if (abilityDescText[i] == '}' && braceCountDesc == 1)
-                {
-                    AbilityInfo info = new AbilityInfo();
-                    info.Name = nameEntryDesc.Replace("}", "").Trim();
-                    info.Description = shortDescEntry;
-                    AllAbilities.Add(info);
-                    nameEntryDesc = "";
-                    shortDescEntry = "";
-                }
-
-            }
-
-
-            foreach (AbilityInfo ability in AllAbilities)
-            {
-                string abilityJson = JsonSerializer.Serialize(ability);
-                if (ability.Name.Contains("mountaineer"))
-                    ability.Name = ability.Name.Replace("//CAP", "");
-                File.WriteAllText(Path.Combine(dexPath, "cobblemon", "abilities", ability.Name + ".json"), abilityJson);
-            }
-
-        }
-        private void importAddonShowdown(string filePath, string modName)
-        {
-            Directory.CreateDirectory(Path.Combine(dexPath, modName, "js"));
-            using (ZipArchive zip = ZipFile.OpenRead(filePath))
-            {
-
-                foreach (ZipArchiveEntry entry in zip.Entries)
-                {
-                    if (!string.IsNullOrEmpty(entry.FullName) && entry.FullName.StartsWith("data/") && entry.FullName.Contains("moves") && entry.FullName.EndsWith(".js"))
-                    {
-                        string destinationPath = Path.Combine(dexPath, modName, "js", entry.Name);
-                        using (var entryStream = entry.Open())
-                        using (var fileStream = File.Create(destinationPath))
-                        {
-                            entryStream.CopyTo(fileStream);
-                        }
-                    }
-                    if (!string.IsNullOrEmpty(entry.FullName) && entry.FullName.StartsWith("assets/") && entry.FullName.Contains("lang") && entry.FullName.EndsWith("en_us.json"))
-                    {
-                        string destinationPath = Path.Combine(dexPath, modName, entry.Name);
-                        using (var entryStream = entry.Open())
-                        using (var fileStream = File.Create(destinationPath))
-                        {
-                            entryStream.CopyTo(fileStream);
-                        }
-
-                    }
-                }
-
-            }
-        }
-        private void importAddonMoves(string modName)
-        {
-            List<MoveInfo> AllMoves = new List<MoveInfo>();
-            MoveInfo currentInfo = new MoveInfo();
-
-            //move stats
-            foreach (string file in Directory.GetFiles(Path.Combine(dexPath, modName, "js")))
-            {
-                string moveText = File.ReadAllText(file);
-
-                int braceStart = moveText.IndexOf('{');
+                int braceStart = moveText.IndexOf('{', startIndex);
 
                 if (braceStart == -1)
                     throw new Exception("Could not find opening brace");
 
 
-                string nameEntry = Path.GetFileNameWithoutExtension(file);
+                string nameEntry = "";
                 string accuracyEntry = "";
                 bool accuracySearch = false;
                 string basePowerEntry = "";
@@ -2998,6 +2773,9 @@ namespace MasterCobbleDexWorkingNew
 
                     if (moveText[i] == '}')
                         braceCount--;
+
+                    if (braceCount == 1)
+                        nameEntry = nameEntry + moveText[i];
 
                     if (accuracySearch)
                     {
@@ -3058,7 +2836,17 @@ namespace MasterCobbleDexWorkingNew
                         else
                             typeEntry = typeEntry + moveText[i];
                     }
-                    else if (braceCount == 1 && moveText[i] == 'a')
+
+                    if (braceCount == 2 && !string.IsNullOrEmpty(nameEntry))
+                    {
+                        string[] bannedPhrases = { "{", "}", "\n", "\"", ":", ",", " " };
+                        foreach (string phrase in bannedPhrases)
+                            nameEntry = nameEntry.Replace(phrase, "");
+                        nameEntry.Trim();
+                        currentInfo.Name = nameEntry;
+                        nameEntry = "";
+                    }
+                    else if (braceCount == 2 && moveText[i] == 'a')
                     {
                         int length = 9;
                         if (i + 9 >= moveText.Length)
@@ -3067,7 +2855,7 @@ namespace MasterCobbleDexWorkingNew
                             accuracySearch = true;
 
                     }
-                    else if (braceCount == 1 && moveText[i] == 'b')
+                    else if (braceCount == 2 && moveText[i] == 'b')
                     {
                         int length = 9;
                         if (i + 9 >= moveText.Length)
@@ -3076,7 +2864,7 @@ namespace MasterCobbleDexWorkingNew
                             basePowerSearch = true;
 
                     }
-                    else if (braceCount == 1 && moveText[i] == 'c')
+                    else if (braceCount == 2 && moveText[i] == 'c')
                     {
                         int length = 9;
                         if (i + 9 >= moveText.Length)
@@ -3085,7 +2873,7 @@ namespace MasterCobbleDexWorkingNew
                             categorySearch = true;
 
                     }
-                    else if (braceCount == 1 && moveText[i] == 'p')
+                    else if (braceCount == 2 && moveText[i] == 'p')
                     {
                         int length = 3;
                         if (i + 3 >= moveText.Length)
@@ -3094,7 +2882,7 @@ namespace MasterCobbleDexWorkingNew
                             ppSearch = true;
 
                     }
-                    else if (braceCount == 1 && moveText[i] == 't')
+                    else if (braceCount == 2 && moveText[i] == 't')
                     {
                         int length = 5;
                         if (i + 5 >= moveText.Length)
@@ -3103,53 +2891,450 @@ namespace MasterCobbleDexWorkingNew
                             typeSearch = true;
 
                     }
-                    if (moveText[i] == '}' && braceCount == 0)
+                    if (moveText[i] == '}' && braceCount == 1)
                     {
-                        currentInfo.Name = nameEntry;
-                        currentInfo.Type = currentInfo.Type.Trim();
                         AllMoves.Add(currentInfo);
                         currentInfo = new MoveInfo();
-                        break;
                     }
 
                 }
+
+
+                //move desc
+
+                string moveDescText = File.ReadAllText(Path.Combine(dexPath, "cobblemon", "js", "movesText.js"));
+
+                string markerDesc = "const MovesText =";
+                int startIndexDesc = moveDescText.IndexOf(markerDesc);
+
+                if (startIndexDesc == -1)
+                    startIndexDesc = 0;
+
+                int braceStartDesc = moveDescText.IndexOf('{', startIndexDesc);
+
+                if (braceStartDesc == -1)
+                    throw new Exception("Could not find opening brace");
+
+
+                string nameEntryDesc = "";
+                string shortDescEntry = "";
+                bool shortDescSearch = false;
+
+
+                int braceCountDesc = 0;
+                for (int i = braceStartDesc; i < moveDescText.Length; i++)
+                {
+                    if (moveDescText[i] == '{')
+                        braceCountDesc++;
+
+                    if (moveDescText[i] == '}')
+                        braceCountDesc--;
+
+                    if (braceCountDesc == 1)
+                        nameEntryDesc = nameEntryDesc + moveDescText[i];
+
+                    if (shortDescSearch)
+                    {
+                        if ((moveDescText[i] == '"') && !string.IsNullOrEmpty(shortDescEntry))
+                        {
+                            shortDescEntry.Trim();
+                            shortDescSearch = false;
+                        }
+                        else
+                            shortDescEntry = shortDescEntry + moveDescText[i];
+                    }
+
+                    if (braceCountDesc == 2 && !string.IsNullOrEmpty(nameEntryDesc))
+                    {
+                        string[] bannedPhrases = { "{", "}", "\n", "\"", ":", ",", " " };
+                        foreach (string phrase in bannedPhrases)
+                            nameEntryDesc = nameEntryDesc.Replace(phrase, "");
+                        nameEntryDesc.Trim();
+                    }
+
+                    if (braceCountDesc == 2 && moveDescText[i] == '"')
+                    {
+                        string t = moveDescText.Substring(i - 11, 12);
+                        if (moveDescText.Substring(i - 11, 12) == "shortDesc: \"")
+                            shortDescSearch = true;
+
+                    }
+
+                    if (moveDescText[i] == '}' && braceCountDesc == 1)
+                    {
+                        MoveInfo foundMove = AllMoves.FirstOrDefault(m => m.Name == nameEntryDesc.Replace("}", ""));
+                        if (foundMove != null)
+                            foundMove.Description = shortDescEntry;
+                        nameEntryDesc = "";
+                        shortDescEntry = "";
+                    }
+
+                }
+
+                foreach (MoveInfo move in AllMoves)
+                {
+                    string moveJson = JsonSerializer.Serialize(move);
+                    File.WriteAllText(Path.Combine(dexPath, "cobblemon", "moves", move.Name + ".json"), moveJson);
+                }
+
+            }
+            catch
+            {
+                MessageBox.Show("import cobblemon moves error");
+            }
+        }
+        private void importCobblemonAbilities()
+        {
+            try
+            {
+                List<AbilityInfo> AllAbilities = new List<AbilityInfo>();
+                string abilityDescText = File.ReadAllText(Path.Combine(dexPath, "cobblemon", "js", "abilities.js"));
+
+                string markerDesc = "const AbilitiesText =";
+                int startIndexDesc = abilityDescText.IndexOf(markerDesc);
+
+                if (startIndexDesc == -1)
+                    startIndexDesc = 0;
+
+                int braceStartDesc = abilityDescText.IndexOf('{', startIndexDesc);
+
+                if (braceStartDesc == -1)
+                    throw new Exception("Could not find opening brace");
+
+
+                string nameEntryDesc = "";
+                string shortDescEntry = "";
+                bool shortDescSearch = false;
+
+
+                int braceCountDesc = 0;
+                for (int i = braceStartDesc; i < abilityDescText.Length; i++)
+                {
+                    if (abilityDescText[i] == '{')
+                        braceCountDesc++;
+
+                    if (abilityDescText[i] == '}')
+                        braceCountDesc--;
+
+                    if (braceCountDesc == 1)
+                        nameEntryDesc = nameEntryDesc + abilityDescText[i];
+
+                    if (shortDescSearch)
+                    {
+                        if ((abilityDescText[i] == '"') && !string.IsNullOrEmpty(shortDescEntry))
+                        {
+                            shortDescEntry.Trim();
+                            shortDescSearch = false;
+                        }
+                        else
+                            shortDescEntry = shortDescEntry + abilityDescText[i];
+                    }
+
+                    if (braceCountDesc == 2 && !string.IsNullOrEmpty(nameEntryDesc))
+                    {
+                        string[] bannedPhrases = { "{", "}", "\n", "\"", ":", ",", " " };
+                        foreach (string phrase in bannedPhrases)
+                            nameEntryDesc = nameEntryDesc.Replace(phrase, "");
+                        nameEntryDesc.Trim();
+                    }
+
+                    if (braceCountDesc == 2 && abilityDescText[i] == '"')
+                    {
+                        string t = abilityDescText.Substring(i - 11, 12);
+                        if (abilityDescText.Substring(i - 11, 12) == "shortDesc: \"")
+                            shortDescSearch = true;
+
+                    }
+
+                    if (abilityDescText[i] == '}' && braceCountDesc == 1)
+                    {
+                        AbilityInfo info = new AbilityInfo();
+                        info.Name = nameEntryDesc.Replace("}", "").Trim();
+                        info.Description = shortDescEntry;
+                        AllAbilities.Add(info);
+                        nameEntryDesc = "";
+                        shortDescEntry = "";
+                    }
+
+                }
+
+
+                foreach (AbilityInfo ability in AllAbilities)
+                {
+                    string abilityJson = JsonSerializer.Serialize(ability);
+                    if (ability.Name.Contains("mountaineer"))
+                        ability.Name = ability.Name.Replace("//CAP", "");
+                    File.WriteAllText(Path.Combine(dexPath, "cobblemon", "abilities", ability.Name + ".json"), abilityJson);
+                }
+
+            }
+            catch
+            {
+                MessageBox.Show("import cobblemon abilities error");
             }
 
-            string jsonText = File.ReadAllText(Path.Combine(dexPath, modName, "en_us.json"));
-            jsonText = Regex.Replace(jsonText, @"^\s*#+.*$", "", RegexOptions.Multiline);
-            JObject langJSON = JObject.Parse(jsonText);
-            foreach(MoveInfo move in AllMoves)
-                move.Description = (string)langJSON["cobblemon.move." + move.Name + ".desc"];
-
-
-            foreach (MoveInfo move in AllMoves)
+        }
+        private void importAddonShowdown(string filePath, string modName)
+        {
+            try
             {
-                string moveJson = JsonSerializer.Serialize(move);
-                File.WriteAllText(Path.Combine(dexPath, modName, "moves", move.Name + ".json"), moveJson);
+                Directory.CreateDirectory(Path.Combine(dexPath, modName, "js"));
+                using (ZipArchive zip = ZipFile.OpenRead(filePath))
+                {
+
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (!string.IsNullOrEmpty(entry.FullName) && entry.FullName.StartsWith("data/") && entry.FullName.Contains("moves") && entry.FullName.EndsWith(".js"))
+                        {
+                            string destinationPath = Path.Combine(dexPath, modName, "js", entry.Name);
+                            using (var entryStream = entry.Open())
+                            using (var fileStream = File.Create(destinationPath))
+                            {
+                                entryStream.CopyTo(fileStream);
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(entry.FullName) && entry.FullName.StartsWith("assets/") && entry.FullName.Contains("lang") && entry.FullName.EndsWith("en_us.json"))
+                        {
+                            string destinationPath = Path.Combine(dexPath, modName, entry.Name);
+                            using (var entryStream = entry.Open())
+                            using (var fileStream = File.Create(destinationPath))
+                            {
+                                entryStream.CopyTo(fileStream);
+                            }
+
+                        }
+                    }
+
+                }
+
+            }
+            catch
+            {
+                MessageBox.Show("import addon showdown error");
+            }
+        }
+        private void importAddonMoves(string modName)
+        {
+            try
+            {
+                List<MoveInfo> AllMoves = new List<MoveInfo>();
+                MoveInfo currentInfo = new MoveInfo();
+
+                //move stats
+                foreach (string file in Directory.GetFiles(Path.Combine(dexPath, modName, "js")))
+                {
+                    string moveText = File.ReadAllText(file);
+
+                    int braceStart = moveText.IndexOf('{');
+
+                    if (braceStart == -1)
+                        throw new Exception("Could not find opening brace");
+
+
+                    string nameEntry = Path.GetFileNameWithoutExtension(file);
+                    string accuracyEntry = "";
+                    bool accuracySearch = false;
+                    string basePowerEntry = "";
+                    bool basePowerSearch = false;
+                    string categoryEntry = "";
+                    bool categorySearch = false;
+                    string ppEntry = "";
+                    bool ppSearch = false;
+                    string typeEntry = "";
+                    bool typeSearch = false;
+
+
+                    int braceCount = 0;
+                    for (int i = braceStart; i < moveText.Length; i++)
+                    {
+                        if (moveText[i] == '{')
+                            braceCount++;
+
+                        if (moveText[i] == '}')
+                            braceCount--;
+
+                        if (accuracySearch)
+                        {
+                            if ((moveText[i] == '}' || moveText[i] == ',') && !string.IsNullOrEmpty(accuracyEntry))
+                            {
+                                if (string.IsNullOrEmpty(currentInfo.Accuracy))
+                                    currentInfo.Accuracy = accuracyEntry.Replace("ccuracy:", "").Replace(" ", "");
+                                accuracyEntry = "";
+                                accuracySearch = false;
+                            }
+                            else
+                                accuracyEntry = accuracyEntry + moveText[i];
+                        }
+                        if (basePowerSearch)
+                        {
+                            if ((moveText[i] == '}' || moveText[i] == ',') && !string.IsNullOrEmpty(basePowerEntry))
+                            {
+                                if (string.IsNullOrEmpty(currentInfo.BasePower))
+                                    currentInfo.BasePower = basePowerEntry.Replace("asePower:", "").Replace(" ", "");
+                                basePowerEntry = "";
+                                basePowerSearch = false;
+                            }
+                            else
+                                basePowerEntry = basePowerEntry + moveText[i];
+                        }
+                        if (categorySearch)
+                        {
+                            if ((moveText[i] == '}' || moveText[i] == ',') && !string.IsNullOrEmpty(categoryEntry))
+                            {
+                                if (string.IsNullOrEmpty(currentInfo.Category))
+                                    currentInfo.Category = categoryEntry.Replace("ategory:", "").Replace("\"", "").Replace(" ", "");
+                                categoryEntry = "";
+                                categorySearch = false;
+                            }
+                            else
+                                categoryEntry = categoryEntry + moveText[i];
+                        }
+                        if (ppSearch)
+                        {
+                            if ((moveText[i] == '}' || moveText[i] == ',') && !string.IsNullOrEmpty(ppEntry))
+                            {
+                                if (string.IsNullOrEmpty(currentInfo.PP))
+                                    currentInfo.PP = ppEntry.Replace("p:", "").Replace(" ", "");
+                                ppEntry = "";
+                                ppSearch = false;
+                            }
+                            else
+                                ppEntry = ppEntry + moveText[i];
+                        }
+                        if (typeSearch)
+                        {
+                            if ((moveText[i] == '}' || moveText[i] == ',') && !string.IsNullOrEmpty(typeEntry))
+                            {
+                                currentInfo.Type = typeEntry.Replace("ype:", "").Replace("\"", "").Replace(" ", "");
+                                typeEntry = "";
+                                typeSearch = false;
+                            }
+                            else
+                                typeEntry = typeEntry + moveText[i];
+                        }
+                        else if (braceCount == 1 && moveText[i] == 'a')
+                        {
+                            int length = 9;
+                            if (i + 9 >= moveText.Length)
+                                length = i + 8 - moveText.Length;
+                            if (moveText.Substring(i, length) == "accuracy:")
+                                accuracySearch = true;
+
+                        }
+                        else if (braceCount == 1 && moveText[i] == 'b')
+                        {
+                            int length = 9;
+                            if (i + 9 >= moveText.Length)
+                                length = i + 8 - moveText.Length;
+                            if (moveText.Substring(i, length) == "basePower")
+                                basePowerSearch = true;
+
+                        }
+                        else if (braceCount == 1 && moveText[i] == 'c')
+                        {
+                            int length = 9;
+                            if (i + 9 >= moveText.Length)
+                                length = i + 8 - moveText.Length;
+                            if (moveText.Substring(i, length) == "category:")
+                                categorySearch = true;
+
+                        }
+                        else if (braceCount == 1 && moveText[i] == 'p')
+                        {
+                            int length = 3;
+                            if (i + 3 >= moveText.Length)
+                                length = i + 2 - moveText.Length;
+                            if (moveText.Substring(i, length) == "pp:")
+                                ppSearch = true;
+
+                        }
+                        else if (braceCount == 1 && moveText[i] == 't')
+                        {
+                            int length = 5;
+                            if (i + 5 >= moveText.Length)
+                                length = i + 4 - moveText.Length;
+                            if (moveText.Substring(i, length) == "type:")
+                                typeSearch = true;
+
+                        }
+                        if (moveText[i] == '}' && braceCount == 0)
+                        {
+                            currentInfo.Name = nameEntry;
+                            currentInfo.Type = currentInfo.Type.Trim();
+                            AllMoves.Add(currentInfo);
+                            currentInfo = new MoveInfo();
+                            break;
+                        }
+
+                    }
+                }
+
+                string jsonText = File.ReadAllText(Path.Combine(dexPath, modName, "en_us.json"));
+                jsonText = Regex.Replace(jsonText, @"^\s*#+.*$", "", RegexOptions.Multiline);
+                JObject langJSON = JObject.Parse(jsonText);
+                foreach (MoveInfo move in AllMoves)
+                    move.Description = (string)langJSON["cobblemon.move." + move.Name + ".desc"];
+
+
+                foreach (MoveInfo move in AllMoves)
+                {
+                    string moveJson = JsonSerializer.Serialize(move);
+                    File.WriteAllText(Path.Combine(dexPath, modName, "moves", move.Name + ".json"), moveJson);
+                }
+
+            }
+            catch
+            {
+                MessageBox.Show("import addon moves error");
             }
         }
         private void importAddonAbilities(string modName)
         {
-            List<AbilityInfo> AllAbilities = new List<AbilityInfo>();
-            string jsonText = File.ReadAllText(Path.Combine(dexPath, modName, "en_us.json"));
-            jsonText = Regex.Replace(jsonText, @"^\s*#+.*$", "", RegexOptions.Multiline);
-            JObject langJSON = JObject.Parse(jsonText);
-            var matching = langJSON.Properties().Where(p => p.Name.StartsWith("cobblemon.ability") && p.Name.EndsWith(".desc"));
-
-            foreach (var prop in matching)
+            try
             {
-                AbilityInfo ability = new AbilityInfo();
-                ability.Name = prop.Name.Split(".")[2];
-                ability.Description = (string)langJSON[prop.Name];
-                AllAbilities.Add(ability);
+                List<AbilityInfo> AllAbilities = new List<AbilityInfo>();
+                string jsonText = File.ReadAllText(Path.Combine(dexPath, modName, "en_us.json"));
+                jsonText = Regex.Replace(jsonText, @"^\s*#+.*$", "", RegexOptions.Multiline);
+                JObject langJSON = JObject.Parse(jsonText);
+                var matching = langJSON.Properties().Where(p => p.Name.StartsWith("cobblemon.ability") && p.Name.EndsWith(".desc"));
+
+                foreach (var prop in matching)
+                {
+                    AbilityInfo ability = new AbilityInfo();
+                    ability.Name = prop.Name.Split(".")[2];
+                    ability.Description = (string)langJSON[prop.Name];
+                    AllAbilities.Add(ability);
+                }
+
+                foreach (AbilityInfo ability in AllAbilities)
+                {
+                    string moveJson = JsonSerializer.Serialize(ability);
+                    File.WriteAllText(Path.Combine(dexPath, modName, "abilities", ability.Name + ".json"), moveJson);
+                }
+
             }
-
-            foreach (AbilityInfo ability in AllAbilities)
+            catch
             {
-                string moveJson = JsonSerializer.Serialize(ability);
-                File.WriteAllText(Path.Combine(dexPath, modName, "abilities", ability.Name + ".json"), moveJson);
+                MessageBox.Show("import addon abilities error");
             }
         }
-
+        private void dtgMoves_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (dtgMoves.SelectedIndex == -1)
+                    blkMoveDescription.Text = "";
+                else
+                {
+                    Move selectedMove = dtgMoves.SelectedItem as Move;
+                    blkMoveDescription.Text = "";
+                    blkMoveDescription.Inlines.Add(new Run(selectedMove.Description));
+                }
+            }
+            catch
+            {
+                MessageBox.Show("datagrid move selection error");
+            }
+        }
     }
 }
