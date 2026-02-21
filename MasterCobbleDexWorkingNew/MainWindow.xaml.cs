@@ -665,7 +665,7 @@ namespace MasterCobbleDexWorkingNew
 
                                 if (species.SelectToken("evolutions[" + i + "].requiredContext") != null)
                                 {
-                                    if (String.IsNullOrEmpty(species.SelectToken("evolutions[" + i + "].requiredContext")?.ToString()))
+                                    if (!String.IsNullOrEmpty(species.SelectToken("evolutions[" + i + "].requiredContext").ToString()))
                                     {
                                         App.EvoItem newEvoItem = new App.EvoItem();
                                         newEvoItem.Item = species.SelectToken("evolutions[" + i + "].requiredContext")?.ToString();
@@ -972,7 +972,7 @@ namespace MasterCobbleDexWorkingNew
                                                 if (species.SelectToken("forms[" + s + "].evolutions[" + i + "].requiredContext") != null)
                                                 {
 
-                                                    if (String.IsNullOrEmpty(species.SelectToken("forms[" + s + "].evolutions[" + i + "].requiredContext")?.ToString()))
+                                                    if (!String.IsNullOrEmpty(species.SelectToken("forms[" + s + "].evolutions[" + i + "].requiredContext")?.ToString()))
                                                     {
                                                         App.EvoItem newEvoItem = new App.EvoItem();
                                                         newEvoItem.Item = species.SelectToken("forms[" + s + "].evolutions[" + i + "].requiredContext")?.ToString();
@@ -1525,7 +1525,7 @@ namespace MasterCobbleDexWorkingNew
                             {
                                 foreach(App.Move move in pkmn.Moves)
                                 {
-                                    if (move.MoveName.ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
+                                    if (move.MoveName.Replace("_", "").ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
                                     {
                                         filteredList.Add(pkmn);
                                         App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
@@ -1540,7 +1540,7 @@ namespace MasterCobbleDexWorkingNew
                                 {
                                     foreach (App.Move move in pkmn.Forms[i].Moves)
                                     {
-                                        if (move.MoveName.ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
+                                        if (move.MoveName.Replace("_", "").ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
                                         {
                                             filteredList.Add(pkmn);
                                             App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
@@ -1562,7 +1562,7 @@ namespace MasterCobbleDexWorkingNew
                             {
                                 foreach (App.Ability ability in pkmn.Abilities)
                                 {
-                                    if (ability.AbilityName.ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
+                                    if (ability.AbilityName.Replace("_", "").ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
                                     {
                                         filteredList.Add(pkmn);
                                         App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
@@ -1577,7 +1577,7 @@ namespace MasterCobbleDexWorkingNew
                                 {
                                     foreach (App.Ability ability in pkmn.Forms[i].Abilities)
                                     {
-                                        if (ability.AbilityName.ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
+                                        if (ability.AbilityName.Replace("_", "").ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
                                         {
                                             filteredList.Add(pkmn);
                                             App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
@@ -1599,7 +1599,7 @@ namespace MasterCobbleDexWorkingNew
                             {
                                 foreach (App.Drop drop in pkmn.Drops)
                                 {
-                                    if (drop.Item.ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
+                                    if (drop.Item.Replace("_", "").ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
                                     {
                                         filteredList.Add(pkmn);
                                         App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
@@ -1614,7 +1614,7 @@ namespace MasterCobbleDexWorkingNew
                                 {
                                     foreach (App.Drop drop in pkmn.Forms[i].Drops)
                                     {
-                                        if (drop.Item.ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
+                                        if (drop.Item.Replace("_", "").ToLower().Contains(txtSearchPokemon.Text.Replace(" ", "").ToLower()))
                                         {
                                             filteredList.Add(pkmn);
                                             App.Pokemon lastPkmn = filteredList.Last() as App.Pokemon;
