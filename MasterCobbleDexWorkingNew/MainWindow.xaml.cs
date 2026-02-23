@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,9 @@ namespace MasterCobbleDexWorkingNew
             InitializeComponent();
             folderInit();
             CountFolders();
-            RefreshDataGrid();
+            MessageBoxResult result = MessageBox.Show("Do you want to create a Master Dex using existing data?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+                RefreshDataGrid();
         }
         private void Add_Content_Click(object sender, RoutedEventArgs e)
         {
@@ -632,7 +635,10 @@ namespace MasterCobbleDexWorkingNew
                         {
                             App.Move newMove = new App.Move();
                             List<string> moveParts = move.ToString().Split(':').ToList();
-                            newMove.MoveName = moveParts[1];
+                            if(moveParts.Count > 1)
+                                newMove.MoveName = moveParts[1];
+                            else
+                                newMove.MoveName = moveParts[0];
                             newMove.MoveType = moveParts[0];
                             if(File.Exists(Path.Combine(masterMovePath, newMove.MoveName + ".json")))
                             {
@@ -1127,9 +1133,10 @@ namespace MasterCobbleDexWorkingNew
                                         //pokemonList.Add(pkmn);
                                         pkmn.Forms.Add(pkmnForm);
                                     }
-                                    catch
+                                    catch (Exception ex)
                                     {
-                                        MessageBox.Show("error at " + name);
+                                        if (ex is not JsonReaderException)
+                                            MessageBox.Show("error at " + name);
                                     }
 
                                 }
@@ -1250,7 +1257,7 @@ namespace MasterCobbleDexWorkingNew
                                         while (tags.Count != 0)
                                         {
                                             string mod = tags[0].Substring(1).Split(":")[0];
-                                            string tag = tags[0].Substring(1).Split(":")[1];
+                                            string tag = tags[0].Substring(1).Split(":")[1].Split("/").LastOrDefault();
                                             string tagPath = Path.Combine(dexPath, mod, "biome_tag", tag + ".json");
 
                                             if (File.Exists(tagPath))
@@ -1440,9 +1447,10 @@ namespace MasterCobbleDexWorkingNew
                         pokemonList.Add(pkmn);
 
                     }
-                    catch
+                    catch(Exception ex)
                     {
-                        MessageBox.Show("error at " + name);
+                        if (ex is not JsonReaderException)
+                            MessageBox.Show("error at " + name);
                     }
                 }
                 dtgPokemon.ItemsSource = pokemonList;
@@ -1893,6 +1901,216 @@ namespace MasterCobbleDexWorkingNew
                     int evocount = 0;
                     if (FormSelected.Evolutions != null)
                     {
+                        if (!String.IsNullOrEmpty(FormSelected.PreEvo.PreEvolutionName))
+                        {
+                            Pokemon preEvoDefault = pokemonList.FirstOrDefault(p => p.Name.ToLower() == FormSelected.PreEvo.PreEvolutionName);
+                            Pokemon SelectedForm = preEvoDefault;
+                            string evolveIntoName = FormSelected.Name;
+                            if (FormSelected.Form != "Default")
+                                evolveIntoName = evolveIntoName + " " + FormSelected.Form;
+
+                            Evolution evolution = preEvoDefault.Evolutions.FirstOrDefault(e => e.EvolveInto.ToLower().Contains(evolveIntoName.ToLower()));
+                            if(evolution == null)
+                                foreach(Pokemon form in preEvoDefault.Forms)
+                                {
+                                    if (evolution != null)
+                                        break;
+                                    evolution = form.Evolutions.FirstOrDefault(e => e.EvolveInto.ToLower().Contains(evolveIntoName.ToLower()));
+                                    SelectedForm = form;
+
+                                }
+                            if(evolution != null)
+                            {
+                                RowDefinition row = new RowDefinition();
+                                GridLengthConverter grc = new GridLengthConverter();
+                                row.Height = (GridLength)grc.ConvertFromString("40");
+                                grdEvolutionsInfo.RowDefinitions.Add(row);
+
+                                RowDefinition row2 = new RowDefinition();
+                                row2.Height = GridLength.Auto;
+                                grdEvolutionsInfo.RowDefinitions.Add(row2);
+
+                                Label lblName = new Label();
+                                lblName.SetValue(Grid.RowProperty, evocount);
+                                lblName.FontSize = 20;
+                                lblName.Content = "PreEvolution: " + ProperString(SelectedForm.Name);
+                                if(SelectedForm.Form != "Default")
+                                    lblName.Content = lblName.Content.ToString() + " " + SelectedForm.Form.ToLower();
+                                grdEvolutionsInfo.Children.Add(lblName);
+                                evocount++;
+
+                                TextBlock blkEvoInfo = new TextBlock();
+                                blkEvoInfo.SetValue(Grid.RowProperty, evocount);
+                                blkEvoInfo.FontSize = 16;
+                                blkEvoInfo.TextWrapping = TextWrapping.Wrap;
+
+                                if (evolution.Level != 0)
+                                {
+                                    blkEvoInfo.Inlines.Add(new Run("Must be atleast level " + evolution.Level + ". "));
+                                    blkEvoInfo.Inlines.Add(new LineBreak());
+                                }
+
+                                if (evolution.Items.Count != 0)
+                                {
+                                    foreach (EvoItem item in evolution.Items)
+                                    {
+                                        if (!String.IsNullOrWhiteSpace(item.Item))
+                                        {
+                                            blkEvoInfo.Inlines.Add(new Run("Give "));
+                                            if (item.ItemMin == item.ItemMax)
+                                            {
+                                                blkEvoInfo.Inlines.Add(new Run(item.ItemMin + " " + item.Item + ". "));
+                                                blkEvoInfo.Inlines.Add(new LineBreak());
+                                            }
+                                            else
+                                            {
+                                                blkEvoInfo.Inlines.Add(new Run(item.ItemMin + "-" + item.ItemMax + " " + item.Item + ". "));
+                                                blkEvoInfo.Inlines.Add(new LineBreak());
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
+                                if (evolution.Trade)
+                                {
+                                    blkEvoInfo.Inlines.Add(new Run("Must be traded. "));
+                                    blkEvoInfo.Inlines.Add(new LineBreak());
+                                }
+                                if (evolution.Friendship != 0)
+                                {
+                                    blkEvoInfo.Inlines.Add(new Run("Must have atleast " + evolution.Friendship + " friendship. "));
+                                    blkEvoInfo.Inlines.Add(new LineBreak());
+                                }
+                                if (!String.IsNullOrEmpty(evolution.Gender))
+                                {
+                                    blkEvoInfo.Inlines.Add(new Run("Must be " + ProperString(evolution.Gender) + ". "));
+                                    blkEvoInfo.Inlines.Add(new LineBreak());
+                                }
+                                if (!String.IsNullOrEmpty(evolution.Time))
+                                {
+                                    blkEvoInfo.Inlines.Add(new Run("Must be " + ProperString(evolution.Time) + " time. "));
+                                    blkEvoInfo.Inlines.Add(new LineBreak());
+                                }
+
+                                if (evolution.learnedMoveType.Count != 0)
+                                {
+                                    foreach (string moveType in evolution.learnedMoveType)
+                                    {
+                                        blkEvoInfo.Inlines.Add(new Run("Must have a " + ProperString(moveType) + " move. "));
+                                        blkEvoInfo.Inlines.Add(new LineBreak());
+
+                                    }
+
+                                }
+
+                                if (evolution.learnedMove.Count != 0)
+                                {
+                                    foreach (string move in evolution.learnedMove)
+                                    {
+                                        blkEvoInfo.Inlines.Add(new Run("Must have the move " + ProperString(move) + ". "));
+                                        blkEvoInfo.Inlines.Add(new LineBreak());
+
+                                    }
+                                }
+                                if (!String.IsNullOrEmpty(evolution.Biome))
+                                {
+                                    blkEvoInfo.Inlines.Add(new Run("Must be in " + evolution.Biome + ". "));
+                                    blkEvoInfo.Inlines.Add(new LineBreak());
+                                }
+                                if (!String.IsNullOrEmpty(evolution.HeldItem))
+                                {
+                                    blkEvoInfo.Inlines.Add(new Run("Must be holding a " + evolution.HeldItem + ". "));
+                                    blkEvoInfo.Inlines.Add(new LineBreak());
+                                }
+                                if (evolution.BlocksTravelled != 0)
+                                {
+                                    blkEvoInfo.Inlines.Add(new Run("Must walk " + evolution.BlocksTravelled + " blocks. "));
+                                    blkEvoInfo.Inlines.Add(new LineBreak());
+                                }
+
+                                if (evolution.StatCompare.Count != 0)
+                                {
+                                    foreach (App.EvoStatCompare statCompare in evolution.StatCompare)
+                                    {
+                                        blkEvoInfo.Inlines.Add(new Run(ProperString(statCompare.StatOne) + " " + statCompare.StatOperator + " " + ProperString(statCompare.StatTwo)));
+                                        blkEvoInfo.Inlines.Add(new LineBreak());
+                                    }
+                                }
+
+                                if (evolution.UsedMove.Count != 0)
+                                {
+                                    foreach (App.EvoUsedMove usedMove in evolution.UsedMove)
+                                    {
+                                        blkEvoInfo.Inlines.Add(new Run("Must use " + ProperString(usedMove.UsedMove) + " " + usedMove.UsedMoveTimes + " times."));
+                                        blkEvoInfo.Inlines.Add(new LineBreak());
+                                    }
+                                }
+
+                                if (evolution.DefeatRequirement.Count != 0)
+                                {
+                                    foreach (App.EvoDefeatRequirement defeat in evolution.DefeatRequirement)
+                                    {
+                                        blkEvoInfo.Inlines.Add(new Run("Must defeat " + ProperString(defeat.Pokemon) + " " + defeat.Amount + " times."));
+                                        blkEvoInfo.Inlines.Add(new LineBreak());
+                                    }
+                                }
+                                if (evolution.isShedinja)
+                                {
+                                    blkEvoInfo.Inlines.Add(new Run("Appears after evolving into Ninjask with an empty party slot."));
+                                    blkEvoInfo.Inlines.Add(new LineBreak());
+                                }
+                                if (evolution.isWurmple)
+                                {
+                                    blkEvoInfo.Inlines.Add(new Run("50% random chance."));
+                                    blkEvoInfo.Inlines.Add(new LineBreak());
+                                }
+                                if (evolution.Damaged != 0)
+                                {
+                                    blkEvoInfo.Inlines.Add(new Run("Must recieve " + evolution.Damaged + " total damage. "));
+                                    blkEvoInfo.Inlines.Add(new LineBreak());
+                                }
+                                if (evolution.Recoil != 0)
+                                {
+                                    blkEvoInfo.Inlines.Add(new Run("Must recieve " + evolution.Recoil + " total recoil damage. "));
+                                    blkEvoInfo.Inlines.Add(new LineBreak());
+                                }
+                                if (evolution.Crits != 0)
+                                {
+                                    blkEvoInfo.Inlines.Add(new Run("Must hit " + evolution.Crits + " crits in a single battle. "));
+                                    blkEvoInfo.Inlines.Add(new LineBreak());
+                                }
+                                if (evolution.PartyMember.Count != 0)
+                                {
+                                    foreach (string member in evolution.PartyMember)
+                                    {
+                                        blkEvoInfo.Inlines.Add(new Run("Must have " + ProperString(member) + " in the party. "));
+                                        blkEvoInfo.Inlines.Add(new LineBreak());
+
+                                    }
+                                }
+                                if (evolution.PartyMemberType.Count != 0)
+                                {
+                                    foreach (string type in evolution.PartyMemberType)
+                                    {
+                                        blkEvoInfo.Inlines.Add(new Run("Must have member with the type " + ProperString(type) + " in the party. "));
+                                        blkEvoInfo.Inlines.Add(new LineBreak());
+
+                                    }
+                                }
+                                if (!String.IsNullOrEmpty(evolution.Weather))
+                                {
+                                    blkEvoInfo.Inlines.Add(new Run("Must be in " + evolution.Weather + ". "));
+                                    blkEvoInfo.Inlines.Add(new LineBreak());
+                                }
+
+                                grdEvolutionsInfo.Children.Add(blkEvoInfo);
+                                evocount++;
+
+                            }
+
+                        }
                         foreach (App.Evolution evolution in FormSelected.Evolutions)
                         {
                             RowDefinition row = new RowDefinition();
@@ -1907,7 +2125,7 @@ namespace MasterCobbleDexWorkingNew
                             Label lblName = new Label();
                             lblName.SetValue(Grid.RowProperty, evocount);
                             lblName.FontSize = 20;
-                            lblName.Content = ProperString(evolution.EvolveInto);
+                            lblName.Content = ProperString(evolution.EvolveInto.Split("=").FirstOrDefault());
                             grdEvolutionsInfo.Children.Add(lblName);
                             evocount++;
 
@@ -2126,7 +2344,7 @@ namespace MasterCobbleDexWorkingNew
                             Label lblBucket = new Label();
                             lblBucket.SetValue(Grid.RowProperty, spawncount);
                             lblBucket.FontSize = 18;
-                            lblBucket.Content = ProperString(spawn.Bucket);
+                            lblBucket.Content = ProperString(spawn.Bucket) + "\t\t" + ProperString(spawn.SpawnablePositionType);
                             grdSpawnsInfo.Children.Add(lblBucket);
                             spawncount++;
 
@@ -2250,7 +2468,7 @@ namespace MasterCobbleDexWorkingNew
 
                                 blkConditions.Inlines.Add(new LineBreak());
                             }
-                            if(spawn.Condition.NeededNearbyBlocks.Count != 0)
+                            if(spawn.Condition.NeededNearbyBlocks != null && spawn.Condition.NeededNearbyBlocks.Count != 0)
                             {
                                 blkConditions.Inlines.Add(new Run("Needed Nearby Blocks:"));
                                 blkConditions.Inlines.Add(new LineBreak());
@@ -2260,7 +2478,7 @@ namespace MasterCobbleDexWorkingNew
                                     blkConditions.Inlines.Add(new LineBreak());
                                 }
                             }
-                            if (spawn.Condition.NeededBaseBlocks.Count != 0)
+                            if (spawn.Condition.NeededBaseBlocks != null && spawn.Condition.NeededBaseBlocks.Count != 0)
                             {
                                 blkConditions.Inlines.Add(new Run("Needed Base Blocks:"));
                                 blkConditions.Inlines.Add(new LineBreak());
@@ -2270,7 +2488,7 @@ namespace MasterCobbleDexWorkingNew
                                     blkConditions.Inlines.Add(new LineBreak());
                                 }
                             }
-                            if (spawn.Condition.Biomes.Count != 0)
+                            if (spawn.Condition.Biomes != null && spawn.Condition.Biomes.Count != 0)
                             {
                                 blkConditions.Inlines.Add(new Run("In Biomes:"));
                                 blkConditions.Inlines.Add(new LineBreak());
@@ -2280,7 +2498,7 @@ namespace MasterCobbleDexWorkingNew
                                     blkConditions.Inlines.Add(new LineBreak());
                                 }
                             }
-                            if (spawn.Condition.Structures.Count != 0)
+                            if (spawn.Condition.Structures != null && spawn.Condition.Structures.Count != 0)
                             {
                                 blkConditions.Inlines.Add(new Run("In Structures:"));
                                 blkConditions.Inlines.Add(new LineBreak());
@@ -2973,7 +3191,7 @@ namespace MasterCobbleDexWorkingNew
 
                 foreach (MoveInfo move in AllMoves)
                 {
-                    string moveJson = JsonSerializer.Serialize(move);
+                    string moveJson = System.Text.Json.JsonSerializer.Serialize(move);
                     File.WriteAllText(Path.Combine(dexPath, "cobblemon", "moves", move.Name + ".json"), moveJson);
                 }
 
@@ -3061,7 +3279,7 @@ namespace MasterCobbleDexWorkingNew
 
                 foreach (AbilityInfo ability in AllAbilities)
                 {
-                    string abilityJson = JsonSerializer.Serialize(ability);
+                    string abilityJson = System.Text.Json.JsonSerializer.Serialize(ability);
                     if (ability.Name.Contains("mountaineer"))
                         ability.Name = ability.Name.Replace("//CAP", "");
                     File.WriteAllText(Path.Combine(dexPath, "cobblemon", "abilities", ability.Name + ".json"), abilityJson);
@@ -3278,7 +3496,7 @@ namespace MasterCobbleDexWorkingNew
 
                 foreach (MoveInfo move in AllMoves)
                 {
-                    string moveJson = JsonSerializer.Serialize(move);
+                    string moveJson = System.Text.Json.JsonSerializer.Serialize(move);
                     File.WriteAllText(Path.Combine(dexPath, modName, "moves", move.Name + ".json"), moveJson);
                 }
 
@@ -3308,7 +3526,7 @@ namespace MasterCobbleDexWorkingNew
 
                 foreach (AbilityInfo ability in AllAbilities)
                 {
-                    string moveJson = JsonSerializer.Serialize(ability);
+                    string moveJson = System.Text.Json.JsonSerializer.Serialize(ability);
                     File.WriteAllText(Path.Combine(dexPath, modName, "abilities", ability.Name + ".json"), moveJson);
                 }
 
