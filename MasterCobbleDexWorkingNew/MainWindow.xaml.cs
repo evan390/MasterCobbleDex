@@ -542,6 +542,10 @@ namespace MasterCobbleDexWorkingNew
                         pkmn.FormSearch = -1;
 
                         pkmn.PreEvo = new App.PreEvolution();
+                        if (pkmn.Name.ToLower() == "eevee")
+                            MessageBox.Show("eevee");
+                        if (pkmn.Name.ToLower() == "spharmander")
+                            MessageBox.Show("spharmander");
 
                         if (species["preEvolution"] != null)
                         {
@@ -1039,7 +1043,10 @@ namespace MasterCobbleDexWorkingNew
                                                                 newEvolution.Time = species.SelectToken("forms[" + s + "].evolutions[" + i + "].requirements[" + j + "].range").ToString();
                                                                 break;
                                                             case "has_move_type":
-                                                                newEvolution.learnedMoveType.Add(species.SelectToken("forms[" + s + "].evolutions[" + i + "].requirements[" + j + "].type").ToString());
+                                                                if(species.SelectToken("forms[" + s + "].evolutions[" + i + "].requirements[" + j + "].type") != null)
+                                                                    newEvolution.learnedMoveType.Add(species.SelectToken("forms[" + s + "].evolutions[" + i + "].requirements[" + j + "].type").ToString());
+                                                                else
+                                                                    newEvolution.learnedMoveType.Add(species.SelectToken("forms[" + s + "].evolutions[" + i + "].requirements[" + j + "].range").ToString());
                                                                 break;
                                                             case "has_move":
                                                                 newEvolution.learnedMove.Add(species.SelectToken("forms[" + s + "].evolutions[" + i + "].requirements[" + j + "].move").ToString());
@@ -3470,7 +3477,8 @@ namespace MasterCobbleDexWorkingNew
 
                     }
                 }
-
+                if (!File.Exists(Path.Combine(dexPath, modName, "en_us.json")))
+                    return;
                 string jsonText = File.ReadAllText(Path.Combine(dexPath, modName, "en_us.json"));
                 jsonText = Regex.Replace(jsonText, @"^\s*#+.*$", "", RegexOptions.Multiline);
                 JObject langJSON = JObject.Parse(jsonText);
@@ -3495,6 +3503,9 @@ namespace MasterCobbleDexWorkingNew
             try
             {
                 List<AbilityInfo> AllAbilities = new List<AbilityInfo>();
+
+                if (!File.Exists(Path.Combine(dexPath, modName, "en_us.json")))
+                    return;
                 string jsonText = File.ReadAllText(Path.Combine(dexPath, modName, "en_us.json"));
                 jsonText = Regex.Replace(jsonText, @"^\s*#+.*$", "", RegexOptions.Multiline);
                 JObject langJSON = JObject.Parse(jsonText);
