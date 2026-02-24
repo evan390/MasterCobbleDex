@@ -35,6 +35,8 @@ namespace MasterCobbleDexWorkingNew
         string dexPath = "";
         List<CheckBox> modCheckboxes = new List<CheckBox>();
         ObservableCollection<App.Pokemon> pokemonList = new ObservableCollection<App.Pokemon>();
+        List<Move> moveLookUp = new List<Move>();
+        List<Ability> abilityLookUp = new List<Ability>();
         public MainWindow()
         {
             InitializeComponent();
@@ -215,7 +217,6 @@ namespace MasterCobbleDexWorkingNew
 
             }
         }
-
         private void folderInit()
         {
             string keyPath = @"Software\MasterCobbleDex";
@@ -247,7 +248,6 @@ namespace MasterCobbleDexWorkingNew
             }
             key.Close();
         }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -462,7 +462,6 @@ namespace MasterCobbleDexWorkingNew
 
 
         }
-
         private void CountFolders()
         {
             try
@@ -498,7 +497,6 @@ namespace MasterCobbleDexWorkingNew
             }
 
         }
-
         private void RefreshDataGrid()
         {
             try
@@ -517,6 +515,8 @@ namespace MasterCobbleDexWorkingNew
                 {
                     return;
                 }
+                createMoveLookUp();
+                createAbilityLookUp();
                 pokemonList.Clear();
                 foreach (string name in fileNames)
                 {
@@ -580,11 +580,9 @@ namespace MasterCobbleDexWorkingNew
                                 newAbility.AbilityName = abilityParts[0];
                                 newAbility.Hidden = false;
                             }
-                            if (File.Exists(Path.Combine(masterAbilityPath, newAbility.AbilityName + ".json")))
-                            {
-                                JObject moveJSON = JObject.Parse(File.ReadAllText(Path.Combine(masterAbilityPath, newAbility.AbilityName + ".json")));
-                                newAbility.Description = moveJSON.SelectToken("Description")?.ToString();
-                            }
+                            Ability foundAbility = abilityLookUp.FirstOrDefault(a => a.AbilityName == newAbility.AbilityName);
+                            if (foundAbility != null)
+                                newAbility.Description = foundAbility.Description;
                             pkmn.Abilities.Add(newAbility);
                         }
                         pkmn.EggGroups = new List<string>();
@@ -640,15 +638,17 @@ namespace MasterCobbleDexWorkingNew
                             else
                                 newMove.MoveName = moveParts[0];
                             newMove.MoveType = moveParts[0];
-                            if(File.Exists(Path.Combine(masterMovePath, newMove.MoveName + ".json")))
+
+                            Move foundMove = moveLookUp.FirstOrDefault(m => m.MoveName == newMove.MoveName);
+                            if (foundMove != null)
                             {
-                                JObject moveJSON = JObject.Parse(File.ReadAllText(Path.Combine(masterMovePath, newMove.MoveName + ".json")));
-                                newMove.Accuracy = moveJSON.SelectToken("Accuracy")?.ToString().Trim();
-                                newMove.BasePower = moveJSON.SelectToken("BasePower")?.ToString().Trim();
-                                newMove.Category = moveJSON.SelectToken("Category")?.ToString().Trim();
-                                newMove.PP = moveJSON.SelectToken("PP")?.ToString().Trim();
-                                newMove.Type = moveJSON.SelectToken("Type")?.ToString().Trim();
-                                newMove.Description = moveJSON.SelectToken("Description")?.ToString();
+                                newMove.Accuracy = foundMove.Accuracy.Trim();
+                                newMove.BasePower = foundMove.BasePower.Trim();
+                                newMove.Category = foundMove.Category.Trim();
+                                newMove.PP = foundMove.PP.Trim();
+                                newMove.Type = foundMove.Type.Trim();
+                                newMove.Description = foundMove.Description;
+
                             }
                             pkmn.Moves.Add(newMove);
                         }
@@ -894,11 +894,9 @@ namespace MasterCobbleDexWorkingNew
                                                     newAbility.AbilityName = abilityParts[0];
                                                     newAbility.Hidden = false;
                                                 }
-                                                if (File.Exists(Path.Combine(masterAbilityPath, newAbility.AbilityName + ".json")))
-                                                {
-                                                    JObject moveJSON = JObject.Parse(File.ReadAllText(Path.Combine(masterAbilityPath, newAbility.AbilityName + ".json")));
-                                                    newAbility.Description = moveJSON.SelectToken("Description")?.ToString();
-                                                }
+                                                Ability foundAbility = abilityLookUp.FirstOrDefault(a => a.AbilityName == newAbility.AbilityName);
+                                                if (foundAbility != null)
+                                                    newAbility.Description = foundAbility.Description;
                                                 pkmnForm.Abilities.Add(newAbility);
                                             }
 
@@ -945,15 +943,16 @@ namespace MasterCobbleDexWorkingNew
                                                 List<string> moveParts = move.ToString().Split(':').ToList();
                                                 newMove.MoveName = moveParts[1];
                                                 newMove.MoveType = moveParts[0];
-                                                if (File.Exists(Path.Combine(masterMovePath, newMove.MoveName + ".json")))
+                                                Move foundMove = moveLookUp.FirstOrDefault(m => m.MoveName == newMove.MoveName);
+                                                if (foundMove != null)
                                                 {
-                                                    JObject moveJSON = JObject.Parse(File.ReadAllText(Path.Combine(masterMovePath, newMove.MoveName + ".json")));
-                                                    newMove.Accuracy = moveJSON.SelectToken("Accuracy")?.ToString().Trim();
-                                                    newMove.BasePower = moveJSON.SelectToken("BasePower")?.ToString().Trim();
-                                                    newMove.Category = moveJSON.SelectToken("Category")?.ToString().Trim();
-                                                    newMove.PP = moveJSON.SelectToken("PP")?.ToString().Trim();
-                                                    newMove.Type = moveJSON.SelectToken("Type")?.ToString().Trim();
-                                                    newMove.Description = moveJSON.SelectToken("Description")?.ToString();
+                                                    newMove.Accuracy = foundMove.Accuracy.Trim();
+                                                    newMove.BasePower = foundMove.BasePower.Trim();
+                                                    newMove.Category = foundMove.Category.Trim();
+                                                    newMove.PP = foundMove.PP.Trim();
+                                                    newMove.Type = foundMove.Type.Trim();
+                                                    newMove.Description = foundMove.Description;
+
                                                 }
                                                 pkmnForm.Moves.Add(newMove);
                                             }
@@ -1464,7 +1463,6 @@ namespace MasterCobbleDexWorkingNew
             }
 
         }
-
         private void txtSearchPokemon_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
@@ -1647,7 +1645,6 @@ namespace MasterCobbleDexWorkingNew
             }
 
         }
-
         private void dtgPokemon_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
@@ -1682,7 +1679,6 @@ namespace MasterCobbleDexWorkingNew
             }
 
         }
-
         private void cboForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -2684,7 +2680,6 @@ namespace MasterCobbleDexWorkingNew
             }
 
         }
-
         private void AbilityLabel_MouseDown(object sender, MouseButtonEventArgs e)
         {
             try
@@ -2703,7 +2698,6 @@ namespace MasterCobbleDexWorkingNew
                 MessageBox.Show("ability label error");
             }
         }
-
         private string ProperString(string word)
         {
 
@@ -2714,7 +2708,6 @@ namespace MasterCobbleDexWorkingNew
             return char.ToUpper(word[0]) + word.Substring(1);
 
         }
-
         private void btnGeneral_Click(object sender, RoutedEventArgs e)
         {
             grdGeneralInfo.Visibility = Visibility.Visible;
@@ -2724,7 +2717,6 @@ namespace MasterCobbleDexWorkingNew
             scrSpawnsInfo.Visibility = Visibility.Collapsed;
 
         }
-
         private void btnLearnset_Click(object sender, RoutedEventArgs e)
         {
             grdGeneralInfo.Visibility = Visibility.Collapsed;
@@ -2734,7 +2726,6 @@ namespace MasterCobbleDexWorkingNew
             scrSpawnsInfo.Visibility = Visibility.Collapsed;
 
         }
-
         private void btnDrops_Click(object sender, RoutedEventArgs e)
         {
             grdGeneralInfo.Visibility = Visibility.Collapsed;
@@ -2744,7 +2735,6 @@ namespace MasterCobbleDexWorkingNew
             scrSpawnsInfo.Visibility = Visibility.Collapsed;
 
         }
-
         private void btnEvolutions_Click(object sender, RoutedEventArgs e)
         {
             grdGeneralInfo.Visibility = Visibility.Collapsed;
@@ -2763,7 +2753,6 @@ namespace MasterCobbleDexWorkingNew
             scrSpawnsInfo.Visibility = Visibility.Visible;
 
         }
-
         private void btnPanelSwitch_Click(object sender, RoutedEventArgs e)
         {
             if(grdEdit.Visibility == Visibility.Visible)
@@ -2779,13 +2768,11 @@ namespace MasterCobbleDexWorkingNew
                 btnPanelSwitch.Content = "Access Master Dex";
             }
         }
-
         private void cboSearchCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if(txtSearchPokemon != null)
                 txtSearchPokemon.Text = "";
         }
-
         private void btnRemoveDeselected_Click(object sender, RoutedEventArgs e)
         {
 
@@ -2812,7 +2799,6 @@ namespace MasterCobbleDexWorkingNew
                 MessageBox.Show("remove deselected error");
             }
         }
-
         private void btnChangeDirectory_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -2861,7 +2847,6 @@ namespace MasterCobbleDexWorkingNew
                 copyFolder(folder, destFolder);
             }
         }
-
         private void chkAll_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -2878,7 +2863,6 @@ namespace MasterCobbleDexWorkingNew
                 MessageBox.Show("checkbox all error");
             }
         }
-
         private void importCobblemonShowdown(string filePath)
         {
             try
@@ -3553,6 +3537,49 @@ namespace MasterCobbleDexWorkingNew
             {
                 MessageBox.Show("datagrid move selection error");
             }
+        }
+        private void createMoveLookUp()
+        {
+            moveLookUp.Clear();
+            string masterMovePath = Path.Combine(dexPath, "master", "moves");
+            foreach (string file in Directory.GetFiles(masterMovePath))
+            {
+                App.Move newMove = new App.Move();
+
+                newMove.MoveName = Path.GetFileNameWithoutExtension(file);
+                newMove.MoveType = "";
+                if (File.Exists(file))
+                {
+                    JObject moveJSON = JObject.Parse(File.ReadAllText(file));
+                    newMove.Accuracy = moveJSON.SelectToken("Accuracy")?.ToString().Trim();
+                    newMove.BasePower = moveJSON.SelectToken("BasePower")?.ToString().Trim();
+                    newMove.Category = moveJSON.SelectToken("Category")?.ToString().Trim();
+                    newMove.PP = moveJSON.SelectToken("PP")?.ToString().Trim();
+                    newMove.Type = moveJSON.SelectToken("Type")?.ToString().Trim();
+                    newMove.Description = moveJSON.SelectToken("Description")?.ToString();
+                }
+                moveLookUp.Add(newMove);
+            }
+
+        }
+        private void createAbilityLookUp()
+        {
+            abilityLookUp.Clear();
+            string masterAbilityPath = Path.Combine(dexPath, "master", "abilities");
+            foreach (string file in Directory.GetFiles(masterAbilityPath))
+            {
+                App.Ability newAbility = new App.Ability();
+
+                newAbility.AbilityName = Path.GetFileNameWithoutExtension(file);
+
+                if (File.Exists(file))
+                {
+                    JObject moveJSON = JObject.Parse(File.ReadAllText(file));
+                    newAbility.Description = moveJSON.SelectToken("Description")?.ToString();
+                }
+                abilityLookUp.Add(newAbility);
+            }
+
         }
     }
 }

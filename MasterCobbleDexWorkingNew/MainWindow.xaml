@@ -172,7 +172,6 @@
                                 <Label FontSize="20" Content="Egg Groups:"/>
                                 <Label FontSize="18" Content="" Grid.Column="1" x:Name="lblEggGroups"/>
                             </Grid>
-                            <Label Grid.Row="3" Content="possible render if i figure that out"/>
                             <Grid Grid.Column="1" Grid.RowSpan="6">
                                 <Grid.RowDefinitions>
                                     <RowDefinition  Height="50"/>
