@@ -542,10 +542,6 @@ namespace MasterCobbleDexWorkingNew
                         pkmn.FormSearch = -1;
 
                         pkmn.PreEvo = new App.PreEvolution();
-                        if (pkmn.Name.ToLower() == "eevee")
-                            MessageBox.Show("eevee");
-                        if (pkmn.Name.ToLower() == "spharmander")
-                            MessageBox.Show("spharmander");
 
                         if (species["preEvolution"] != null)
                         {
