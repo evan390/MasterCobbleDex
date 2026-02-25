@@ -1457,6 +1457,7 @@ namespace MasterCobbleDexWorkingNew
                 }
                 dtgPokemon.ItemsSource = pokemonList;
                 txtSearchPokemon.Text = "";
+                AddMissingPreEvos();
 
             }
             catch
@@ -3587,6 +3588,61 @@ namespace MasterCobbleDexWorkingNew
                 abilityLookUp.Add(newAbility);
             }
 
+        }
+        private void AddMissingPreEvos()
+        {
+            foreach(Pokemon pkmn in pokemonList)
+            {
+                foreach(Evolution evo in pkmn.Evolutions)
+                {
+                    string evolveInto = evo.EvolveInto;
+                    string pkmnName = evolveInto.Split(" ")[0];
+                    Pokemon foundPokemon = pokemonList.FirstOrDefault(p => p.Name.ToLower() == pkmnName.ToLower());
+                    if(foundPokemon != null)
+                    {
+                        if(evolveInto.Split(" ").Count() > 1)
+                        {
+                            Pokemon foundForm = foundPokemon.Forms.FirstOrDefault(f => f.Form.ToLower().Contains(evolveInto.Split(" ")[1].ToLower()));
+                            if (foundForm != null)
+                                foundPokemon = foundForm;
+                        }
+                        if (String.IsNullOrEmpty(foundPokemon.PreEvo.PreEvolutionName))
+                        {
+                            foundPokemon.PreEvo.PreEvolutionName = pkmn.Name.ToLower();
+                            if(pkmn.Form != "Default")
+                                foundPokemon.PreEvo.PreEvolutionForm = pkmn.Form.ToLower();
+                        }
+                    }
+
+
+                }
+                foreach(Pokemon form in pkmn.Forms)
+                {
+                    foreach (Evolution evo in form.Evolutions)
+                    {
+                        string evolveInto = evo.EvolveInto;
+                        string pkmnName = evolveInto.Split(" ")[0];
+                        Pokemon foundPokemon = pokemonList.FirstOrDefault(p => p.Name.ToLower() == pkmnName.ToLower());
+                        if (foundPokemon != null)
+                        {
+                            if (evolveInto.Split(" ").Count() > 1)
+                            {
+                                Pokemon foundForm = foundPokemon.Forms.FirstOrDefault(f => f.Form.ToLower().Contains(evolveInto.Split(" ")[1].ToLower()));
+                                if (foundForm != null)
+                                    foundPokemon = foundForm;
+                            }
+                            if (String.IsNullOrEmpty(foundPokemon.PreEvo.PreEvolutionName))
+                            {
+                                foundPokemon.PreEvo.PreEvolutionName = pkmn.Name.ToLower();
+                                if (pkmn.Form != "Default")
+                                    foundPokemon.PreEvo.PreEvolutionForm = pkmn.Form.ToLower();
+                            }
+                        }
+
+                    }
+
+                }
+            }
         }
     }
 }
