@@ -753,11 +753,18 @@ namespace MasterCobbleDexWorkingNew
                                                 {
                                                     biome = species.SelectToken("evolutions[" + i + "].requirements[" + j + "].biomeConditions").ToString();
                                                 }
-                                                else
+                                                else if(species.SelectToken("evolutions[" + i + "].requirements[" + j + "].biomeAnticondition") != null)
                                                 {
                                                     biome = "not" + species.SelectToken("evolutions[" + i + "].requirements[" + j + "].biomeAnticondition").ToString();
                                                 }
-                                                newEvolution.Biome = biome;
+                                                if (!String.IsNullOrEmpty(biome))
+                                                {
+                                                    if (String.IsNullOrEmpty(newEvolution.Biome))
+                                                        newEvolution.Biome = biome;
+                                                    else
+                                                        newEvolution.Biome = newEvolution.Biome + ", " + biome;
+                                                }
+
                                                 break;
                                             case "held_item":
                                                 newEvolution.HeldItem = species.SelectToken("evolutions[" + i + "].requirements[" + j + "].itemCondition").ToString();
@@ -1057,11 +1064,17 @@ namespace MasterCobbleDexWorkingNew
                                                                 {
                                                                     biome = species.SelectToken("forms[" + s + "].evolutions[" + i + "].requirements[" + j + "].biomeConditions").ToString();
                                                                 }
-                                                                else
+                                                                else if(species.SelectToken("forms[" + s + "].evolutions[" + i + "].requirements[" + j + "].biomeAnticondition") != null)
                                                                 {
                                                                     biome = "not" + species.SelectToken("forms[" + s + "].evolutions[" + i + "].requirements[" + j + "].biomeAnticondition").ToString();
                                                                 }
-                                                                newEvolution.Biome = biome;
+                                                                if (!String.IsNullOrEmpty(biome))
+                                                                {
+                                                                    if (String.IsNullOrEmpty(newEvolution.Biome))
+                                                                        newEvolution.Biome = biome;
+                                                                    else
+                                                                        newEvolution.Biome = newEvolution.Biome + ", " + biome;
+                                                                }
                                                                 break;
                                                             case "held_item":
                                                                 newEvolution.HeldItem = species.SelectToken("forms[" + s + "].evolutions[" + i + "].requirements[" + j + "].itemCondition").ToString();
