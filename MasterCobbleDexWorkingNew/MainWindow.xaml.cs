@@ -169,7 +169,7 @@ namespace MasterCobbleDexWorkingNew
                                 }
                                 foreach (ZipArchiveEntry entry in biomeTagEntries)
                                 {
-                                    string destinationPath = Path.Combine(biomeTagPath, entry.Name);
+                                    string destinationPath = Path.Combine(biomeTagPath, entry.ToString().Substring(entry.ToString().IndexOf("biome/") + "biome/".Length).Replace('/', '.'));
                                     using (var entryStream = entry.Open())
                                     using (var fileStream = File.Create(destinationPath))
                                     {
@@ -1272,7 +1272,7 @@ namespace MasterCobbleDexWorkingNew
                                         while (tags.Count != 0)
                                         {
                                             string mod = tags[0].Substring(1).Split(":")[0];
-                                            string tag = tags[0].Substring(1).Split(":")[1].Split("/").LastOrDefault();
+                                            string tag = tags[0].Substring(1).Split(":")[1].Replace('/', '.');
                                             string tagPath = Path.Combine(dexPath, mod, "biome_tag", tag + ".json");
 
                                             if (File.Exists(tagPath))
@@ -1389,7 +1389,7 @@ namespace MasterCobbleDexWorkingNew
                                         while (tags.Count != 0)
                                         {
                                             string mod = tags[0].Substring(1).Split(":")[0];
-                                            string tag = tags[0].Substring(1).Split(":")[1];
+                                            string tag = tags[0].Substring(1).Split(":")[1].Replace('/', '.');
                                             string tagPath = Path.Combine(dexPath, mod, "biome_tag", tag + ".json");
 
                                             if (File.Exists(tagPath))
@@ -2551,11 +2551,6 @@ namespace MasterCobbleDexWorkingNew
                             {
                                 blkConditions.Inlines.Add(new Run("Using bait of " + spawn.Condition.Bait));
                                 blkConditions.Inlines.Add(new LineBreak());
-                            }
-
-                            if(spawn.AntiCondition != null)
-                            {
-
                             }
 
                             if (spawn.AntiCondition.CanSeeSky != null)
