@@ -9,8 +9,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Fonts\ARCADECLASSIC.TTF" />
+    <None Remove="Fonts\fire_red.ttf" />
+    <None Remove="Fonts\LowresPixel.otf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="images\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Fonts\ARCADECLASSIC.TTF">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Fonts\fire_red.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Fonts\LowresPixel.otf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

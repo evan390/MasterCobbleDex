@@ -477,12 +477,14 @@ namespace MasterCobbleDexWorkingNew
                     {
                         RowDefinition row = new RowDefinition();
                         GridLengthConverter grc = new GridLengthConverter();
-                        row.Height = (GridLength)grc.ConvertFromString("25");
+                        row.Height = (GridLength)grc.ConvertFromString("30");
                         grdMods.RowDefinitions.Add(row);
                         CheckBox chkbx = new CheckBox();
                         chkbx.SetValue(Grid.RowProperty, count);
                         chkbx.IsChecked = true;
                         chkbx.Content = name;
+                        chkbx.Margin = new Thickness(5);
+                        chkbx.VerticalAlignment = VerticalAlignment.Center;
                         modCheckboxes.Add(chkbx);
                         grdMods.Children.Add(chkbx);
                         count++;
@@ -1707,6 +1709,7 @@ namespace MasterCobbleDexWorkingNew
                     lblName.Content = ProperString(FormSelected.Name);
                     lblTypeOne.Content = ProperString(FormSelected.Type1);
                     lblTypeTwo.Content = ProperString(FormSelected.Type2);
+                    string spacing = "    ";
 
                     if (FormSelected.MaleRatio != null)
                     {
@@ -1814,6 +1817,8 @@ namespace MasterCobbleDexWorkingNew
                             Label abilityLabel = new Label();
                             abilityLabel.Content = ability.AbilityName;
                             abilityLabel.Cursor = Cursors.Hand;
+                            abilityLabel.FontSize = 24;
+                            abilityLabel.VerticalAlignment = VerticalAlignment.Center;
                             abilityLabel.MouseDown += AbilityLabel_MouseDown;
                             abilityLabel.SetValue(Grid.RowProperty, abilityCount);
                             grdAbilities.Children.Add(abilityLabel);
@@ -1821,6 +1826,8 @@ namespace MasterCobbleDexWorkingNew
                             {
                                 Label hiddenLabel = new Label();
                                 hiddenLabel.Content = "(H)";
+                                hiddenLabel.FontSize = 24;
+                                hiddenLabel.VerticalAlignment = VerticalAlignment.Center;
                                 hiddenLabel.SetValue(Grid.RowProperty, abilityCount);
                                 hiddenLabel.SetValue(Grid.ColumnProperty, 1);
                                 grdAbilities.Children.Add(hiddenLabel);
@@ -1838,6 +1845,8 @@ namespace MasterCobbleDexWorkingNew
                             Label abilityLabel = new Label();
                             abilityLabel.Content = ability.AbilityName;
                             abilityLabel.Cursor = Cursors.Hand;
+                            abilityLabel.FontSize = 24;
+                            abilityLabel.VerticalAlignment = VerticalAlignment.Center;
                             abilityLabel.MouseDown += AbilityLabel_MouseDown;
                             abilityLabel.SetValue(Grid.RowProperty, abilityCount);
                             grdAbilities.Children.Add(abilityLabel);
@@ -1845,6 +1854,8 @@ namespace MasterCobbleDexWorkingNew
                             {
                                 Label hiddenLabel = new Label();
                                 hiddenLabel.Content = "(H)";
+                                hiddenLabel.FontSize = 24;
+                                hiddenLabel.VerticalAlignment = VerticalAlignment.Center;
                                 hiddenLabel.SetValue(Grid.RowProperty, abilityCount);
                                 hiddenLabel.SetValue(Grid.ColumnProperty, 1);
                                 grdAbilities.Children.Add(hiddenLabel);
@@ -1896,13 +1907,13 @@ namespace MasterCobbleDexWorkingNew
 
                         Label lbl = new Label();
                         lbl.SetValue(Grid.RowProperty, count);
-                        lbl.FontSize = 20;
+                        lbl.FontSize = 28;
                         lbl.Content = drop.Item;
                         if (!String.IsNullOrEmpty(drop.QuantityRange))
-                            lbl.Content = lbl.Content + "\tQuantity: " + drop.QuantityRange;
+                            lbl.Content = lbl.Content + " \tQuantity: " + drop.QuantityRange;
 
                         if (drop.Percent != 0)
-                            lbl.Content = lbl.Content + "\tPercent: " + drop.Percent + "%";
+                            lbl.Content = lbl.Content + " \tPercent: " + drop.Percent + "%";
 
                         grdDropsInfo.Children.Add(lbl);
                         count++;
@@ -1945,7 +1956,7 @@ namespace MasterCobbleDexWorkingNew
 
                                 Label lblName = new Label();
                                 lblName.SetValue(Grid.RowProperty, evocount);
-                                lblName.FontSize = 20;
+                                lblName.FontSize = 30;
                                 lblName.Content = "PreEvolution: " + ProperString(SelectedForm.Name);
                                 if(SelectedForm.Form != "Default")
                                     lblName.Content = lblName.Content.ToString() + " " + SelectedForm.Form.ToLower();
@@ -1954,12 +1965,13 @@ namespace MasterCobbleDexWorkingNew
 
                                 TextBlock blkEvoInfo = new TextBlock();
                                 blkEvoInfo.SetValue(Grid.RowProperty, evocount);
-                                blkEvoInfo.FontSize = 16;
+                                blkEvoInfo.FontSize = 24;
                                 blkEvoInfo.TextWrapping = TextWrapping.Wrap;
+                                blkEvoInfo.FontFamily = new System.Windows.Media.FontFamily(new Uri("pack://application:,,,/"), "/Fonts/#Pokemon Fire Red");
 
                                 if (evolution.Level != 0)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must be atleast level " + evolution.Level + ". "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must be atleast level " + evolution.Level + ". "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
 
@@ -1969,7 +1981,7 @@ namespace MasterCobbleDexWorkingNew
                                     {
                                         if (!String.IsNullOrWhiteSpace(item.Item))
                                         {
-                                            blkEvoInfo.Inlines.Add(new Run("Give "));
+                                            blkEvoInfo.Inlines.Add(new Run(spacing + "Give "));
                                             if (item.ItemMin == item.ItemMax)
                                             {
                                                 blkEvoInfo.Inlines.Add(new Run(item.ItemMin + " " + item.Item + ". "));
@@ -1988,22 +2000,22 @@ namespace MasterCobbleDexWorkingNew
 
                                 if (evolution.Trade)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must be traded. "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must be traded. "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
                                 if (evolution.Friendship != 0)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must have atleast " + evolution.Friendship + " friendship. "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must have atleast " + evolution.Friendship + " friendship. "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
                                 if (!String.IsNullOrEmpty(evolution.Gender))
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must be " + ProperString(evolution.Gender) + ". "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must be " + ProperString(evolution.Gender) + ". "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
                                 if (!String.IsNullOrEmpty(evolution.Time))
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must be " + ProperString(evolution.Time) + " time. "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must be " + ProperString(evolution.Time) + " time. "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
 
@@ -2011,7 +2023,7 @@ namespace MasterCobbleDexWorkingNew
                                 {
                                     foreach (string moveType in evolution.learnedMoveType)
                                     {
-                                        blkEvoInfo.Inlines.Add(new Run("Must have a " + ProperString(moveType) + " move. "));
+                                        blkEvoInfo.Inlines.Add(new Run(spacing + "Must have a " + ProperString(moveType) + " move. "));
                                         blkEvoInfo.Inlines.Add(new LineBreak());
 
                                     }
@@ -2022,24 +2034,24 @@ namespace MasterCobbleDexWorkingNew
                                 {
                                     foreach (string move in evolution.learnedMove)
                                     {
-                                        blkEvoInfo.Inlines.Add(new Run("Must have the move " + ProperString(move) + ". "));
+                                        blkEvoInfo.Inlines.Add(new Run(spacing + "Must have the move " + ProperString(move) + ". "));
                                         blkEvoInfo.Inlines.Add(new LineBreak());
 
                                     }
                                 }
                                 if (!String.IsNullOrEmpty(evolution.Biome))
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must be in " + evolution.Biome + ". "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must be in " + evolution.Biome + ". "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
                                 if (!String.IsNullOrEmpty(evolution.HeldItem))
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must be holding a " + evolution.HeldItem + ". "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must be holding a " + evolution.HeldItem + ". "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
                                 if (evolution.BlocksTravelled != 0)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must walk " + evolution.BlocksTravelled + " blocks. "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must walk " + evolution.BlocksTravelled + " blocks. "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
 
@@ -2047,7 +2059,7 @@ namespace MasterCobbleDexWorkingNew
                                 {
                                     foreach (App.EvoStatCompare statCompare in evolution.StatCompare)
                                     {
-                                        blkEvoInfo.Inlines.Add(new Run(ProperString(statCompare.StatOne) + " " + statCompare.StatOperator + " " + ProperString(statCompare.StatTwo)));
+                                        blkEvoInfo.Inlines.Add(new Run(spacing + ProperString(statCompare.StatOne) + " " + statCompare.StatOperator + " " + ProperString(statCompare.StatTwo)));
                                         blkEvoInfo.Inlines.Add(new LineBreak());
                                     }
                                 }
@@ -2056,7 +2068,7 @@ namespace MasterCobbleDexWorkingNew
                                 {
                                     foreach (App.EvoUsedMove usedMove in evolution.UsedMove)
                                     {
-                                        blkEvoInfo.Inlines.Add(new Run("Must use " + ProperString(usedMove.UsedMove) + " " + usedMove.UsedMoveTimes + " times."));
+                                        blkEvoInfo.Inlines.Add(new Run(spacing + "Must use " + ProperString(usedMove.UsedMove) + " " + usedMove.UsedMoveTimes + " times."));
                                         blkEvoInfo.Inlines.Add(new LineBreak());
                                     }
                                 }
@@ -2065,40 +2077,40 @@ namespace MasterCobbleDexWorkingNew
                                 {
                                     foreach (App.EvoDefeatRequirement defeat in evolution.DefeatRequirement)
                                     {
-                                        blkEvoInfo.Inlines.Add(new Run("Must defeat " + ProperString(defeat.Pokemon) + " " + defeat.Amount + " times."));
+                                        blkEvoInfo.Inlines.Add(new Run(spacing + "Must defeat " + ProperString(defeat.Pokemon) + " " + defeat.Amount + " times."));
                                         blkEvoInfo.Inlines.Add(new LineBreak());
                                     }
                                 }
                                 if (evolution.isShedinja)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Appears after evolving into Ninjask with an empty party slot."));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Appears after evolving into Ninjask with an empty party slot."));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
                                 if (evolution.isWurmple)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("50% random chance."));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "50% random chance."));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
                                 if (evolution.Damaged != 0)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must recieve " + evolution.Damaged + " total damage. "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must recieve " + evolution.Damaged + " total damage. "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
                                 if (evolution.Recoil != 0)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must recieve " + evolution.Recoil + " total recoil damage. "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must recieve " + evolution.Recoil + " total recoil damage. "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
                                 if (evolution.Crits != 0)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must hit " + evolution.Crits + " crits in a single battle. "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must hit " + evolution.Crits + " crits in a single battle. "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
                                 if (evolution.PartyMember.Count != 0)
                                 {
                                     foreach (string member in evolution.PartyMember)
                                     {
-                                        blkEvoInfo.Inlines.Add(new Run("Must have " + ProperString(member) + " in the party. "));
+                                        blkEvoInfo.Inlines.Add(new Run(spacing + "Must have " + ProperString(member) + " in the party. "));
                                         blkEvoInfo.Inlines.Add(new LineBreak());
 
                                     }
@@ -2107,14 +2119,14 @@ namespace MasterCobbleDexWorkingNew
                                 {
                                     foreach (string type in evolution.PartyMemberType)
                                     {
-                                        blkEvoInfo.Inlines.Add(new Run("Must have member with the type " + ProperString(type) + " in the party. "));
+                                        blkEvoInfo.Inlines.Add(new Run(spacing + "Must have member with the type " + ProperString(type) + " in the party. "));
                                         blkEvoInfo.Inlines.Add(new LineBreak());
 
                                     }
                                 }
                                 if (!String.IsNullOrEmpty(evolution.Weather))
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must be in " + evolution.Weather + ". "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must be in " + evolution.Weather + ". "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
 
@@ -2137,19 +2149,20 @@ namespace MasterCobbleDexWorkingNew
 
                             Label lblName = new Label();
                             lblName.SetValue(Grid.RowProperty, evocount);
-                            lblName.FontSize = 20;
+                            lblName.FontSize = 30;
                             lblName.Content = ProperString(evolution.EvolveInto.Split("=").FirstOrDefault());
                             grdEvolutionsInfo.Children.Add(lblName);
                             evocount++;
 
                             TextBlock blkEvoInfo = new TextBlock();
                             blkEvoInfo.SetValue(Grid.RowProperty, evocount);
-                            blkEvoInfo.FontSize = 16;
+                            blkEvoInfo.FontSize = 24;
                             blkEvoInfo.TextWrapping = TextWrapping.Wrap;
+                            blkEvoInfo.FontFamily = new System.Windows.Media.FontFamily(new Uri("pack://application:,,,/"), "/Fonts/#Pokemon Fire Red");
 
                             if (evolution.Level != 0)
                             {
-                                blkEvoInfo.Inlines.Add(new Run("Must be atleast level " + evolution.Level + ". "));
+                                blkEvoInfo.Inlines.Add(new Run(spacing + "Must be atleast level " + evolution.Level + ". "));
                                 blkEvoInfo.Inlines.Add(new LineBreak());
                             }
 
@@ -2159,7 +2172,7 @@ namespace MasterCobbleDexWorkingNew
                                 {
                                     if (!String.IsNullOrWhiteSpace(item.Item))
                                     {
-                                        blkEvoInfo.Inlines.Add(new Run("Give "));
+                                        blkEvoInfo.Inlines.Add(new Run(spacing + "Give "));
                                         if (item.ItemMin == item.ItemMax)
                                         {
                                             blkEvoInfo.Inlines.Add(new Run(item.ItemMin + " " + item.Item + ". "));
@@ -2178,22 +2191,22 @@ namespace MasterCobbleDexWorkingNew
 
                             if (evolution.Trade)
                             {
-                                blkEvoInfo.Inlines.Add(new Run("Must be traded. "));
+                                blkEvoInfo.Inlines.Add(new Run(spacing + "Must be traded. "));
                                 blkEvoInfo.Inlines.Add(new LineBreak());
                             }
                             if (evolution.Friendship != 0)
                             {
-                                blkEvoInfo.Inlines.Add(new Run("Must have atleast " + evolution.Friendship + " friendship. "));
+                                blkEvoInfo.Inlines.Add(new Run(spacing + "Must have atleast " + evolution.Friendship + " friendship. "));
                                 blkEvoInfo.Inlines.Add(new LineBreak());
                             }
                             if (!String.IsNullOrEmpty(evolution.Gender))
                             {
-                                blkEvoInfo.Inlines.Add(new Run("Must be " + ProperString(evolution.Gender) + ". "));
+                                blkEvoInfo.Inlines.Add(new Run(spacing + "Must be " + ProperString(evolution.Gender) + ". "));
                                 blkEvoInfo.Inlines.Add(new LineBreak());
                             }
                             if (!String.IsNullOrEmpty(evolution.Time))
                             {
-                                blkEvoInfo.Inlines.Add(new Run("Must be " + ProperString(evolution.Time) + " time. "));
+                                blkEvoInfo.Inlines.Add(new Run(spacing + "Must be " + ProperString(evolution.Time) + " time. "));
                                 blkEvoInfo.Inlines.Add(new LineBreak());
                             }
 
@@ -2201,7 +2214,7 @@ namespace MasterCobbleDexWorkingNew
                             {
                                 foreach (string moveType in evolution.learnedMoveType)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must have a " + ProperString(moveType) + " move. "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must have a " + ProperString(moveType) + " move. "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
 
                                 }
@@ -2212,24 +2225,24 @@ namespace MasterCobbleDexWorkingNew
                             {
                                 foreach (string move in evolution.learnedMove)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must have the move " + ProperString(move) + ". "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must have the move " + ProperString(move) + ". "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
 
                                 }
                             }
                             if (!String.IsNullOrEmpty(evolution.Biome))
                             {
-                                blkEvoInfo.Inlines.Add(new Run("Must be in " + evolution.Biome + ". "));
+                                blkEvoInfo.Inlines.Add(new Run(spacing + "Must be in " + evolution.Biome + ". "));
                                 blkEvoInfo.Inlines.Add(new LineBreak());
                             }
                             if (!String.IsNullOrEmpty(evolution.HeldItem))
                             {
-                                blkEvoInfo.Inlines.Add(new Run("Must be holding a " + evolution.HeldItem + ". "));
+                                blkEvoInfo.Inlines.Add(new Run(spacing + "Must be holding a " + evolution.HeldItem + ". "));
                                 blkEvoInfo.Inlines.Add(new LineBreak());
                             }
                             if (evolution.BlocksTravelled != 0)
                             {
-                                blkEvoInfo.Inlines.Add(new Run("Must walk " + evolution.BlocksTravelled + " blocks. "));
+                                blkEvoInfo.Inlines.Add(new Run(spacing + "Must walk " + evolution.BlocksTravelled + " blocks. "));
                                 blkEvoInfo.Inlines.Add(new LineBreak());
                             }
 
@@ -2237,7 +2250,7 @@ namespace MasterCobbleDexWorkingNew
                             {
                                 foreach (App.EvoStatCompare statCompare in evolution.StatCompare)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run(ProperString(statCompare.StatOne) + " " + statCompare.StatOperator + " " + ProperString(statCompare.StatTwo)));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + ProperString(statCompare.StatOne) + " " + statCompare.StatOperator + " " + ProperString(statCompare.StatTwo)));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
                             }
@@ -2246,7 +2259,7 @@ namespace MasterCobbleDexWorkingNew
                             {
                                 foreach (App.EvoUsedMove usedMove in evolution.UsedMove)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must use " + ProperString(usedMove.UsedMove) + " " + usedMove.UsedMoveTimes + " times."));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must use " + ProperString(usedMove.UsedMove) + " " + usedMove.UsedMoveTimes + " times."));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
                             }
@@ -2255,40 +2268,40 @@ namespace MasterCobbleDexWorkingNew
                             {
                                 foreach (App.EvoDefeatRequirement defeat in evolution.DefeatRequirement)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must defeat " + ProperString(defeat.Pokemon) + " " + defeat.Amount + " times."));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must defeat " + ProperString(defeat.Pokemon) + " " + defeat.Amount + " times."));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
                                 }
                             }
                             if (evolution.isShedinja)
                             {
-                                blkEvoInfo.Inlines.Add(new Run("Appears after evolving into Ninjask with an empty party slot."));
+                                blkEvoInfo.Inlines.Add(new Run(spacing + "Appears after evolving into Ninjask with an empty party slot."));
                                 blkEvoInfo.Inlines.Add(new LineBreak());
                             }
                             if (evolution.isWurmple)
                             {
-                                blkEvoInfo.Inlines.Add(new Run("50% random chance."));
+                                blkEvoInfo.Inlines.Add(new Run(spacing + "50% random chance."));
                                 blkEvoInfo.Inlines.Add(new LineBreak());
                             }
                             if (evolution.Damaged != 0)
                             {
-                                blkEvoInfo.Inlines.Add(new Run("Must recieve " + evolution.Damaged + " total damage. "));
+                                blkEvoInfo.Inlines.Add(new Run(spacing + "Must recieve " + evolution.Damaged + " total damage. "));
                                 blkEvoInfo.Inlines.Add(new LineBreak());
                             }
                             if (evolution.Recoil != 0)
                             {
-                                blkEvoInfo.Inlines.Add(new Run("Must recieve " + evolution.Recoil + " total recoil damage. "));
+                                blkEvoInfo.Inlines.Add(new Run(spacing + "Must recieve " + evolution.Recoil + " total recoil damage. "));
                                 blkEvoInfo.Inlines.Add(new LineBreak());
                             }
                             if (evolution.Crits != 0)
                             {
-                                blkEvoInfo.Inlines.Add(new Run("Must hit " + evolution.Crits + " crits in a single battle. "));
+                                blkEvoInfo.Inlines.Add(new Run(spacing + "Must hit " + evolution.Crits + " crits in a single battle. "));
                                 blkEvoInfo.Inlines.Add(new LineBreak());
                             }
                             if (evolution.PartyMember.Count != 0)
                             {
                                 foreach (string member in evolution.PartyMember)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must have " + ProperString(member) + " in the party. "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must have " + ProperString(member) + " in the party. "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
 
                                 }
@@ -2297,14 +2310,14 @@ namespace MasterCobbleDexWorkingNew
                             {
                                 foreach (string type in evolution.PartyMemberType)
                                 {
-                                    blkEvoInfo.Inlines.Add(new Run("Must have member with the type " + ProperString(type) + " in the party. "));
+                                    blkEvoInfo.Inlines.Add(new Run(spacing + "Must have member with the type " + ProperString(type) + " in the party. "));
                                     blkEvoInfo.Inlines.Add(new LineBreak());
 
                                 }
                             }
                             if (!String.IsNullOrEmpty(evolution.Weather))
                             {
-                                blkEvoInfo.Inlines.Add(new Run("Must be in " + evolution.Weather + ". "));
+                                blkEvoInfo.Inlines.Add(new Run(spacing + "Must be in " + evolution.Weather + ". "));
                                 blkEvoInfo.Inlines.Add(new LineBreak());
                             }
 
@@ -2331,7 +2344,7 @@ namespace MasterCobbleDexWorkingNew
 
                             Label lblID = new Label();
                             lblID.SetValue(Grid.RowProperty, spawncount);
-                            lblID.FontSize = 20;
+                            lblID.FontSize = 30;
                             lblID.Content = ProperString(spawn.ID);
                             grdSpawnsInfo.Children.Add(lblID);
                             spawncount++;
@@ -2343,7 +2356,7 @@ namespace MasterCobbleDexWorkingNew
 
                             Label lblPokemon = new Label();
                             lblPokemon.SetValue(Grid.RowProperty, spawncount);
-                            lblPokemon.FontSize = 18;
+                            lblPokemon.FontSize = 27;
                             lblPokemon.FontWeight = FontWeights.Bold;
                             lblPokemon.Content = ProperString(spawn.Pokemon);
                             grdSpawnsInfo.Children.Add(lblPokemon);
@@ -2356,7 +2369,7 @@ namespace MasterCobbleDexWorkingNew
 
                             Label lblBucket = new Label();
                             lblBucket.SetValue(Grid.RowProperty, spawncount);
-                            lblBucket.FontSize = 18;
+                            lblBucket.FontSize = 27;
                             lblBucket.Content = ProperString(spawn.Bucket) + "\t\t" + ProperString(spawn.SpawnablePositionType);
                             grdSpawnsInfo.Children.Add(lblBucket);
                             spawncount++;
@@ -2370,7 +2383,7 @@ namespace MasterCobbleDexWorkingNew
 
                                 Label lblPresets = new Label();
                                 lblPresets.SetValue(Grid.RowProperty, spawncount);
-                                lblPresets.FontSize = 18;
+                                lblPresets.FontSize = 27;
                                 lblPresets.Content = "Presets: ";
                                 foreach (string preset in spawn.Presets)
                                     lblPresets.Content = lblPresets.Content + ProperString(preset) + ", ";
@@ -2393,7 +2406,7 @@ namespace MasterCobbleDexWorkingNew
 
                             Label lblCondition = new Label();
                             lblCondition.SetValue(Grid.ColumnProperty, 0);
-                            lblCondition.FontSize = 18;
+                            lblCondition.FontSize = 27;
                             lblCondition.Content = "Conditions";
                             columnsGrid.Children.Add(lblCondition);
 
@@ -2403,7 +2416,7 @@ namespace MasterCobbleDexWorkingNew
 
                             Label lblAntiCondition = new Label();
                             lblAntiCondition.SetValue(Grid.ColumnProperty, 1);
-                            lblAntiCondition.FontSize = 18;
+                            lblAntiCondition.FontSize = 27;
                             lblAntiCondition.Content = "Anti-Conditions";
                             columnsGrid.Children.Add(lblAntiCondition);
 
@@ -2418,106 +2431,108 @@ namespace MasterCobbleDexWorkingNew
 
                             TextBlock blkConditions = new TextBlock();
                             blkConditions.SetValue(Grid.RowProperty, 1);
-                            blkConditions.FontSize = 14;
+                            blkConditions.FontSize = 21;
                             blkConditions.TextWrapping = TextWrapping.Wrap;
+                            blkConditions.FontFamily = new System.Windows.Media.FontFamily(new Uri("pack://application:,,,/"), "/Fonts/#Pokemon Fire Red");
                             columnsGrid.Children.Add(blkConditions);
 
 
                             TextBlock blkAntiConditions = new TextBlock();
                             blkAntiConditions.SetValue(Grid.RowProperty, 1);
                             blkAntiConditions.SetValue(Grid.ColumnProperty, 1);
-                            blkAntiConditions.FontSize = 14;
+                            blkAntiConditions.FontSize = 21;
                             blkAntiConditions.TextWrapping = TextWrapping.Wrap;
+                            blkAntiConditions.FontFamily = new System.Windows.Media.FontFamily(new Uri("pack://application:,,,/"), "/Fonts/#Pokemon Fire Red");
                             columnsGrid.Children.Add(blkAntiConditions);
 
 
                             if (spawn.Condition.CanSeeSky != null)
                             {
                                 if (spawn.Condition.CanSeeSky == true)
-                                    blkConditions.Inlines.Add(new Run("Can see the sky"));
+                                    blkConditions.Inlines.Add(new Run(spacing + "Can see the sky"));
                                 else
-                                    blkConditions.Inlines.Add(new Run("Can't see the sky"));
+                                    blkConditions.Inlines.Add(new Run(spacing + "Can't see the sky"));
 
                                 blkConditions.Inlines.Add(new LineBreak());
                             }
 
                             if (spawn.Condition.MinSkyLight != null)
                             {
-                                blkConditions.Inlines.Add(new Run("Minimun sky light of " + spawn.Condition.MinSkyLight));
+                                blkConditions.Inlines.Add(new Run(spacing + "Minimun sky light of " + spawn.Condition.MinSkyLight));
                                 blkConditions.Inlines.Add(new LineBreak());
                             }
                             if (spawn.Condition.MaxSkyLight != null)
                             {
-                                blkConditions.Inlines.Add(new Run("Maximun sky light of " + spawn.Condition.MaxSkyLight));
+                                blkConditions.Inlines.Add(new Run(spacing + "Maximun sky light of " + spawn.Condition.MaxSkyLight));
                                 blkConditions.Inlines.Add(new LineBreak());
                             }
 
                             if (spawn.Condition.MinY != null)
                             {
-                                blkConditions.Inlines.Add(new Run("Minimun Y of " + spawn.Condition.MinY));
+                                blkConditions.Inlines.Add(new Run(spacing + "Minimun Y of " + spawn.Condition.MinY));
                                 blkConditions.Inlines.Add(new LineBreak());
                             }
                             if (spawn.Condition.MaxY != null)
                             {
-                                blkConditions.Inlines.Add(new Run("Maximun Y of " + spawn.Condition.MaxY));
+                                blkConditions.Inlines.Add(new Run(spacing + "Maximun Y of " + spawn.Condition.MaxY));
                                 blkConditions.Inlines.Add(new LineBreak());
                             }
                             if (!String.IsNullOrWhiteSpace(spawn.Condition.TimeRange))
                             {
-                                blkConditions.Inlines.Add(new Run("Time range of " + spawn.Condition.TimeRange));
+                                blkConditions.Inlines.Add(new Run(spacing + "Time range of " + spawn.Condition.TimeRange));
                                 blkConditions.Inlines.Add(new LineBreak());
                             }
                             if (!String.IsNullOrWhiteSpace(spawn.Condition.MoonPhase))
                             {
-                                blkConditions.Inlines.Add(new Run("Moon Phase of " + spawn.Condition.MoonPhase));
+                                blkConditions.Inlines.Add(new Run(spacing + "Moon Phase of " + spawn.Condition.MoonPhase));
                                 blkConditions.Inlines.Add(new LineBreak());
                             }
                             if (spawn.Condition.IsRaining != null)
                             {
                                 if (spawn.Condition.IsRaining == true)
-                                    blkConditions.Inlines.Add(new Run("Is Raining"));
+                                    blkConditions.Inlines.Add(new Run(spacing + "Is Raining"));
                                 else
-                                    blkConditions.Inlines.Add(new Run("Isn't Raining"));
+                                    blkConditions.Inlines.Add(new Run(spacing + "Isn't Raining"));
 
                                 blkConditions.Inlines.Add(new LineBreak());
                             }
                             if(spawn.Condition.NeededNearbyBlocks != null && spawn.Condition.NeededNearbyBlocks.Count != 0)
                             {
-                                blkConditions.Inlines.Add(new Run("Needed Nearby Blocks:"));
+                                blkConditions.Inlines.Add(new Run(spacing + "Needed Nearby Blocks:"));
                                 blkConditions.Inlines.Add(new LineBreak());
                                 foreach (string block in spawn.Condition.NeededNearbyBlocks)
                                 {
-                                    blkConditions.Inlines.Add(new Run("    -" + block));
+                                    blkConditions.Inlines.Add(new Run(spacing + "    -" + block));
                                     blkConditions.Inlines.Add(new LineBreak());
                                 }
                             }
                             if (spawn.Condition.NeededBaseBlocks != null && spawn.Condition.NeededBaseBlocks.Count != 0)
                             {
-                                blkConditions.Inlines.Add(new Run("Needed Base Blocks:"));
+                                blkConditions.Inlines.Add(new Run(spacing + "Needed Base Blocks:"));
                                 blkConditions.Inlines.Add(new LineBreak());
                                 foreach (string block in spawn.Condition.NeededBaseBlocks)
                                 {
-                                    blkConditions.Inlines.Add(new Run("    -" + block));
+                                    blkConditions.Inlines.Add(new Run(spacing + "    -" + block));
                                     blkConditions.Inlines.Add(new LineBreak());
                                 }
                             }
                             if (spawn.Condition.Biomes != null && spawn.Condition.Biomes.Count != 0)
                             {
-                                blkConditions.Inlines.Add(new Run("In Biomes:"));
+                                blkConditions.Inlines.Add(new Run(spacing + "In Biomes:"));
                                 blkConditions.Inlines.Add(new LineBreak());
                                 foreach (string biome in spawn.Condition.Biomes)
                                 {
-                                    blkConditions.Inlines.Add(new Run("    -" + biome));
+                                    blkConditions.Inlines.Add(new Run(spacing + "    -" + biome));
                                     blkConditions.Inlines.Add(new LineBreak());
                                 }
                             }
                             if (spawn.Condition.Structures != null && spawn.Condition.Structures.Count != 0)
                             {
-                                blkConditions.Inlines.Add(new Run("In Structures:"));
+                                blkConditions.Inlines.Add(new Run(spacing + "In Structures:"));
                                 blkConditions.Inlines.Add(new LineBreak());
                                 foreach (string structure in spawn.Condition.Structures)
                                 {
-                                    blkConditions.Inlines.Add(new Run("    -" + structure));
+                                    blkConditions.Inlines.Add(new Run(spacing + "    -" + structure));
                                     blkConditions.Inlines.Add(new LineBreak());
                                 }
                             }
@@ -2525,125 +2540,125 @@ namespace MasterCobbleDexWorkingNew
                             if (spawn.Condition.IsSlimeChunk != null)
                             {
                                 if (spawn.Condition.IsSlimeChunk == true)
-                                    blkConditions.Inlines.Add(new Run("In a slime chunk"));
+                                    blkConditions.Inlines.Add(new Run(spacing + "In a slime chunk"));
                                 else
-                                    blkConditions.Inlines.Add(new Run("Outside a slime chunk"));
+                                    blkConditions.Inlines.Add(new Run(spacing + "Outside a slime chunk"));
 
                                 blkConditions.Inlines.Add(new LineBreak());
                             }
 
                             if (spawn.Condition.MinLureLevel != null)
                             {
-                                blkConditions.Inlines.Add(new Run("Minimun lure level of " + spawn.Condition.MinLureLevel));
+                                blkConditions.Inlines.Add(new Run(spacing + "Minimun lure level of " + spawn.Condition.MinLureLevel));
                                 blkConditions.Inlines.Add(new LineBreak());
                             }
                             if (spawn.Condition.MaxLureLevel != null)
                             {
-                                blkConditions.Inlines.Add(new Run("Maximun lure level of " + spawn.Condition.MaxLureLevel));
+                                blkConditions.Inlines.Add(new Run(spacing + "Maximun lure level of " + spawn.Condition.MaxLureLevel));
                                 blkConditions.Inlines.Add(new LineBreak());
                             }
                             if (!String.IsNullOrWhiteSpace(spawn.Condition.RodType))
                             {
-                                blkConditions.Inlines.Add(new Run("Rod Type of " + spawn.Condition.RodType));
+                                blkConditions.Inlines.Add(new Run(spacing + "Rod Type of " + spawn.Condition.RodType));
                                 blkConditions.Inlines.Add(new LineBreak());
                             }
                             if (!String.IsNullOrWhiteSpace(spawn.Condition.Bait))
                             {
-                                blkConditions.Inlines.Add(new Run("Using bait of " + spawn.Condition.Bait));
+                                blkConditions.Inlines.Add(new Run(spacing + "Using bait of " + spawn.Condition.Bait));
                                 blkConditions.Inlines.Add(new LineBreak());
                             }
 
                             if (spawn.AntiCondition.CanSeeSky != null)
                             {
                                 if (spawn.AntiCondition.CanSeeSky == true)
-                                    blkAntiConditions.Inlines.Add(new Run("Can see the sky"));
+                                    blkAntiConditions.Inlines.Add(new Run(spacing + "Can see the sky"));
                                 else
-                                    blkAntiConditions.Inlines.Add(new Run("Can't see the sky"));
+                                    blkAntiConditions.Inlines.Add(new Run(spacing + "Can't see the sky"));
 
                                 blkAntiConditions.Inlines.Add(new LineBreak());
                             }
 
                             if (spawn.AntiCondition.MinSkyLight != null)
                             {
-                                blkAntiConditions.Inlines.Add(new Run("Minimun sky light of " + spawn.AntiCondition.MinSkyLight));
+                                blkAntiConditions.Inlines.Add(new Run(spacing + "Minimun sky light of " + spawn.AntiCondition.MinSkyLight));
                                 blkAntiConditions.Inlines.Add(new LineBreak());
                             }
                             if (spawn.AntiCondition.MaxSkyLight != null)
                             {
-                                blkAntiConditions.Inlines.Add(new Run("Maximun sky light of " + spawn.AntiCondition.MaxSkyLight));
+                                blkAntiConditions.Inlines.Add(new Run(spacing + "Maximun sky light of " + spawn.AntiCondition.MaxSkyLight));
                                 blkAntiConditions.Inlines.Add(new LineBreak());
                             }
 
                             if (spawn.AntiCondition.MinY != null)
                             {
-                                blkAntiConditions.Inlines.Add(new Run("Minimun Y of " + spawn.AntiCondition.MinY));
+                                blkAntiConditions.Inlines.Add(new Run(spacing + "Minimun Y of " + spawn.AntiCondition.MinY));
                                 blkAntiConditions.Inlines.Add(new LineBreak());
                             }
                             if (spawn.AntiCondition.MaxY != null)
                             {
-                                blkAntiConditions.Inlines.Add(new Run("Maximun Y of " + spawn.AntiCondition.MaxY));
+                                blkAntiConditions.Inlines.Add(new Run(spacing + "Maximun Y of " + spawn.AntiCondition.MaxY));
                                 blkAntiConditions.Inlines.Add(new LineBreak());
                             }
                             if (!String.IsNullOrWhiteSpace(spawn.AntiCondition.TimeRange))
                             {
-                                blkAntiConditions.Inlines.Add(new Run("Time range of " + spawn.AntiCondition.TimeRange));
+                                blkAntiConditions.Inlines.Add(new Run(spacing + "Time range of " + spawn.AntiCondition.TimeRange));
                                 blkAntiConditions.Inlines.Add(new LineBreak());
                             }
                             if (!String.IsNullOrWhiteSpace(spawn.AntiCondition.MoonPhase))
                             {
-                                blkAntiConditions.Inlines.Add(new Run("Moon Phase of " + spawn.AntiCondition.MoonPhase));
+                                blkAntiConditions.Inlines.Add(new Run(spacing + "Moon Phase of " + spawn.AntiCondition.MoonPhase));
                                 blkAntiConditions.Inlines.Add(new LineBreak());
                             }
                             if (spawn.AntiCondition.IsRaining != null)
                             {
                                 if (spawn.AntiCondition.IsRaining == true)
-                                    blkAntiConditions.Inlines.Add(new Run("Is Raining"));
+                                    blkAntiConditions.Inlines.Add(new Run(spacing + "Is Raining"));
                                 else
-                                    blkAntiConditions.Inlines.Add(new Run("Isn't Raining"));
+                                    blkAntiConditions.Inlines.Add(new Run(spacing + "Isn't Raining"));
 
                                 blkAntiConditions.Inlines.Add(new LineBreak());
                             }
                             if(spawn.AntiCondition.NeededNearbyBlocks != null)
                                 if (spawn.AntiCondition.NeededNearbyBlocks.Count != 0)
                                 {
-                                    blkAntiConditions.Inlines.Add(new Run("Not Near Blocks:"));
+                                    blkAntiConditions.Inlines.Add(new Run(spacing + "Not Near Blocks:"));
                                     blkAntiConditions.Inlines.Add(new LineBreak());
                                     foreach (string block in spawn.AntiCondition.NeededNearbyBlocks)
                                     {
-                                        blkAntiConditions.Inlines.Add(new Run("    -" + block));
+                                        blkAntiConditions.Inlines.Add(new Run(spacing + "    -" + block));
                                         blkAntiConditions.Inlines.Add(new LineBreak());
                                     }
                                 }
                             if (spawn.AntiCondition.NeededBaseBlocks != null)
                                 if (spawn.AntiCondition.NeededBaseBlocks.Count != 0)
                                 {
-                                    blkAntiConditions.Inlines.Add(new Run("Not on Base Blocks:"));
+                                    blkAntiConditions.Inlines.Add(new Run(spacing + "Not on Base Blocks:"));
                                     blkAntiConditions.Inlines.Add(new LineBreak());
                                     foreach (string block in spawn.AntiCondition.NeededBaseBlocks)
                                     {
-                                        blkAntiConditions.Inlines.Add(new Run("    -" + block));
+                                        blkAntiConditions.Inlines.Add(new Run(spacing + "    -" + block));
                                         blkAntiConditions.Inlines.Add(new LineBreak());
                                     }
                                 }
                             if (spawn.AntiCondition.Biomes != null)
                                 if (spawn.AntiCondition.Biomes.Count != 0)
                                 {
-                                    blkAntiConditions.Inlines.Add(new Run("Not in Biomes:"));
+                                    blkAntiConditions.Inlines.Add(new Run(spacing + "Not in Biomes:"));
                                     blkAntiConditions.Inlines.Add(new LineBreak());
                                     foreach (string biome in spawn.AntiCondition.Biomes)
                                     {
-                                        blkAntiConditions.Inlines.Add(new Run("    -" + biome));
+                                        blkAntiConditions.Inlines.Add(new Run(spacing + "    -" + biome));
                                         blkAntiConditions.Inlines.Add(new LineBreak());
                                     }
                                 }
                             if (spawn.AntiCondition.Structures != null)
                                 if (spawn.AntiCondition.Structures.Count != 0)
                                 {
-                                    blkAntiConditions.Inlines.Add(new Run("Not in Structures:"));
+                                    blkAntiConditions.Inlines.Add(new Run(spacing + "Not in Structures:"));
                                     blkAntiConditions.Inlines.Add(new LineBreak());
                                     foreach (string structure in spawn.AntiCondition.Structures)
                                     {
-                                        blkAntiConditions.Inlines.Add(new Run("    -" + structure));
+                                        blkAntiConditions.Inlines.Add(new Run(spacing + "    -" + structure));
                                         blkAntiConditions.Inlines.Add(new LineBreak());
                                     }
                                 }
@@ -2651,31 +2666,31 @@ namespace MasterCobbleDexWorkingNew
                             if (spawn.AntiCondition.IsSlimeChunk != null)
                             {
                                 if (spawn.AntiCondition.IsSlimeChunk == true)
-                                    blkAntiConditions.Inlines.Add(new Run("In a slime chunk"));
+                                    blkAntiConditions.Inlines.Add(new Run(spacing + "In a slime chunk"));
                                 else
-                                    blkAntiConditions.Inlines.Add(new Run("Outside a slime chunk"));
+                                    blkAntiConditions.Inlines.Add(new Run(spacing + "Outside a slime chunk"));
 
                                 blkAntiConditions.Inlines.Add(new LineBreak());
                             }
 
                             if (spawn.AntiCondition.MinLureLevel != null)
                             {
-                                blkAntiConditions.Inlines.Add(new Run("Minimun lure level of " + spawn.AntiCondition.MinLureLevel));
+                                blkAntiConditions.Inlines.Add(new Run(spacing + "Minimun lure level of " + spawn.AntiCondition.MinLureLevel));
                                 blkAntiConditions.Inlines.Add(new LineBreak());
                             }
                             if (spawn.AntiCondition.MaxLureLevel != null)
                             {
-                                blkAntiConditions.Inlines.Add(new Run("Maximun lure level of " + spawn.AntiCondition.MaxLureLevel));
+                                blkAntiConditions.Inlines.Add(new Run(spacing + "Maximun lure level of " + spawn.AntiCondition.MaxLureLevel));
                                 blkAntiConditions.Inlines.Add(new LineBreak());
                             }
                             if (!String.IsNullOrWhiteSpace(spawn.AntiCondition.RodType))
                             {
-                                blkAntiConditions.Inlines.Add(new Run("Rod Type of " + spawn.AntiCondition.RodType));
+                                blkAntiConditions.Inlines.Add(new Run(spacing + "Rod Type of " + spawn.AntiCondition.RodType));
                                 blkAntiConditions.Inlines.Add(new LineBreak());
                             }
                             if (!String.IsNullOrWhiteSpace(spawn.AntiCondition.Bait))
                             {
-                                blkAntiConditions.Inlines.Add(new Run("Using bait of " + spawn.AntiCondition.Bait));
+                                blkAntiConditions.Inlines.Add(new Run(spacing + "Using bait of " + spawn.AntiCondition.Bait));
                                 blkAntiConditions.Inlines.Add(new LineBreak());
                             }
 
