@@ -1933,8 +1933,11 @@ namespace MasterCobbleDexWorkingNew
                             if (FormSelected.Form != "Default")
                                 evolveIntoName = evolveIntoName + " " + FormSelected.Form;
 
-                            Evolution evolution = preEvoDefault.Evolutions.FirstOrDefault(e => e.EvolveInto.ToLower().Contains(evolveIntoName.ToLower()));
-                            if(evolution == null)
+                            Evolution evolution = null;
+                            if(preEvoDefault != null)
+                                evolution = preEvoDefault.Evolutions.FirstOrDefault(e => e.EvolveInto.ToLower().Contains(evolveIntoName.ToLower()));
+
+                            if(evolution == null && preEvoDefault != null)
                                 foreach(Pokemon form in preEvoDefault.Forms)
                                 {
                                     if (evolution != null)

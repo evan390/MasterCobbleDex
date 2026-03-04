@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Fonts\ARCADECLASSIC.TTF" />
     <None Remove="Fonts\fire_red.ttf" />
-    <None Remove="Fonts\LowresPixel.otf" />
+    <None Remove="images\female.png" />
+    <None Remove="images\male.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,19 +20,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="images\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Fonts\ARCADECLASSIC.TTF">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Fonts\fire_red.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Fonts\LowresPixel.otf">
+    <Resource Include="images\female.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="images\male.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Fonts\ARCADECLASSIC.TTF">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Fonts\LowresPixel.otf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
