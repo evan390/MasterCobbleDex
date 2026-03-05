@@ -107,7 +107,8 @@
                         SelectionChanged="dtgPokemon_SelectionChanged"
                         FontFamily="/Fonts/#Pokemon Fire Red"
                         FontSize="20"
-                        HeadersVisibility="Column">
+                        HeadersVisibility="Column"
+                        Background="#2F2F2F">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Pokemon" Binding="{Binding Name}" Width="*"/>
                         </DataGrid.Columns>
@@ -328,15 +329,16 @@
                                         SelectionChanged="dtgMoves_SelectionChanged"
                                         FontFamily="/Fonts/#Pokemon Fire Red"
                                         FontSize="20"
-                                        HeadersVisibility="Column">
+                                        HeadersVisibility="Column"
+                                        Background="#2F2F2F">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Learn Type" Binding="{Binding MoveType}" Width="100"/>
-                                                <DataGridTextColumn Header="Move" Binding="{Binding MoveName}" Width="120"/>
+                                                <DataGridTextColumn Header="Move" Binding="{Binding MoveName}" Width="140"/>
                                                 <DataGridTextColumn Header="Base Power" Binding="{Binding BasePower}" Width="80"/>
                                                 <DataGridTextColumn Header="Accuracy" Binding="{Binding Accuracy}" Width="80"/>
                                                 <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="80"/>
                                                 <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="80"/>
-                                                <DataGridTextColumn Header="PP" Binding="{Binding PP}" Width="25"/>
+                                                <DataGridTextColumn Header="PP" Binding="{Binding PP}" Width="30"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
 
@@ -344,7 +346,7 @@
                                             <TextBlock Grid.Row="2" Margin="5, 2" TextWrapping="Wrap" x:Name="blkMoveDescription" FontSize="24" FontFamily="/Fonts/#Pokemon Fire Red"></TextBlock>
                                         </Border>
                                     </Grid>
-                                    <Grid x:Name="grdDropsInfo" Grid.Row="1" Visibility="Collapsed" Margin="5">
+                                    <Grid x:Name="grdDropsInfo" Grid.Row="1" Visibility="Collapsed" Margin="5"  Background="#E2E2E2">
                                         <Grid.RowDefinitions>
                                             <RowDefinition  Height="*"/>
                                         </Grid.RowDefinitions>

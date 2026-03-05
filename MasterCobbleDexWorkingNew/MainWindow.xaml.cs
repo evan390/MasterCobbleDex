@@ -1709,7 +1709,7 @@ namespace MasterCobbleDexWorkingNew
                     lblName.Content = ProperString(FormSelected.Name);
                     lblTypeOne.Content = ProperString(FormSelected.Type1);
                     lblTypeTwo.Content = ProperString(FormSelected.Type2);
-                    string spacing = "    ";
+                    string spacing = "";
 
                     if (FormSelected.MaleRatio != null)
                     {
@@ -1906,11 +1906,12 @@ namespace MasterCobbleDexWorkingNew
                         grdDropsInfo.RowDefinitions.Add(row);
 
                         Label lbl = new Label();
+                        lbl.Margin = new Thickness(10, 0, 10, 0);
                         lbl.SetValue(Grid.RowProperty, count);
                         lbl.FontSize = 28;
-                        lbl.Content = drop.Item;
+                        lbl.Content = drop.Item + "              ";
                         if (!String.IsNullOrEmpty(drop.QuantityRange))
-                            lbl.Content = lbl.Content + " \tQuantity: " + drop.QuantityRange;
+                            lbl.Content = lbl.Content + " \tQuantity:    " + drop.QuantityRange;
 
                         if (drop.Percent != 0)
                             lbl.Content = lbl.Content + " \tPercent: " + drop.Percent + "%";
@@ -1950,26 +1951,41 @@ namespace MasterCobbleDexWorkingNew
                             {
                                 RowDefinition row = new RowDefinition();
                                 GridLengthConverter grc = new GridLengthConverter();
-                                row.Height = (GridLength)grc.ConvertFromString("40");
+                                row.Height = (GridLength)grc.ConvertFromString("50");
                                 grdEvolutionsInfo.RowDefinitions.Add(row);
 
                                 RowDefinition row2 = new RowDefinition();
                                 row2.Height = GridLength.Auto;
                                 grdEvolutionsInfo.RowDefinitions.Add(row2);
 
+                                Border titleBorder = new Border();
+                                titleBorder.SetValue(Grid.RowProperty, evocount);
+                                titleBorder.Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#3A96B6");
+                                titleBorder.Margin = new Thickness(10, 10, 10, 0);
+                                grdEvolutionsInfo.Children.Add(titleBorder);
+
                                 Label lblName = new Label();
                                 lblName.SetValue(Grid.RowProperty, evocount);
                                 lblName.FontSize = 30;
+                                lblName.Margin = new Thickness(15, 10, 15, 0);
                                 lblName.Content = "PreEvolution: " + ProperString(SelectedForm.Name);
-                                if(SelectedForm.Form != "Default")
+                                lblName.Style = (Style)FindResource("LabelShadowSmaller");
+                                if (SelectedForm.Form != "Default")
                                     lblName.Content = lblName.Content.ToString() + " " + SelectedForm.Form.ToLower();
                                 grdEvolutionsInfo.Children.Add(lblName);
                                 evocount++;
+
+                                Border textBlockBorder = new Border();
+                                textBlockBorder.SetValue(Grid.RowProperty, evocount);
+                                textBlockBorder.Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#E2E2E2");
+                                textBlockBorder.Margin = new Thickness(20, 0, 20, 0);
+                                grdEvolutionsInfo.Children.Add(textBlockBorder);
 
                                 TextBlock blkEvoInfo = new TextBlock();
                                 blkEvoInfo.SetValue(Grid.RowProperty, evocount);
                                 blkEvoInfo.FontSize = 24;
                                 blkEvoInfo.TextWrapping = TextWrapping.Wrap;
+                                blkEvoInfo.Margin = new Thickness(30, 0, 30, 0);
                                 blkEvoInfo.FontFamily = new System.Windows.Media.FontFamily(new Uri("pack://application:,,,/"), "/Fonts/#Pokemon Fire Red");
 
                                 if (evolution.Level != 0)
@@ -2143,24 +2159,39 @@ namespace MasterCobbleDexWorkingNew
                         {
                             RowDefinition row = new RowDefinition();
                             GridLengthConverter grc = new GridLengthConverter();
-                            row.Height = (GridLength)grc.ConvertFromString("40");
+                            row.Height = (GridLength)grc.ConvertFromString("50");
                             grdEvolutionsInfo.RowDefinitions.Add(row);
 
                             RowDefinition row2 = new RowDefinition();
                             row2.Height = GridLength.Auto;
                             grdEvolutionsInfo.RowDefinitions.Add(row2);
 
+                            Border titleBorder = new Border();
+                            titleBorder.SetValue(Grid.RowProperty, evocount);
+                            titleBorder.Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#3A96B6");
+                            titleBorder.Margin = new Thickness(10, 10, 10, 0);
+                            grdEvolutionsInfo.Children.Add(titleBorder);
+
                             Label lblName = new Label();
                             lblName.SetValue(Grid.RowProperty, evocount);
                             lblName.FontSize = 30;
+                            lblName.Margin = new Thickness(15, 10, 15, 0);
                             lblName.Content = ProperString(evolution.EvolveInto.Split("=").FirstOrDefault());
+                            lblName.Style = (Style)FindResource("LabelShadowSmaller");
                             grdEvolutionsInfo.Children.Add(lblName);
                             evocount++;
+
+                            Border textBlockBorder = new Border();
+                            textBlockBorder.SetValue(Grid.RowProperty, evocount);
+                            textBlockBorder.Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#E2E2E2");
+                            textBlockBorder.Margin = new Thickness(20, 0, 20, 0);
+                            grdEvolutionsInfo.Children.Add(textBlockBorder);
 
                             TextBlock blkEvoInfo = new TextBlock();
                             blkEvoInfo.SetValue(Grid.RowProperty, evocount);
                             blkEvoInfo.FontSize = 24;
                             blkEvoInfo.TextWrapping = TextWrapping.Wrap;
+                            blkEvoInfo.Margin = new Thickness(30, 0, 30, 0);
                             blkEvoInfo.FontFamily = new System.Windows.Media.FontFamily(new Uri("pack://application:,,,/"), "/Fonts/#Pokemon Fire Red");
 
                             if (evolution.Level != 0)
@@ -2342,13 +2373,21 @@ namespace MasterCobbleDexWorkingNew
 
                             RowDefinition rowID = new RowDefinition();
                             GridLengthConverter grc = new GridLengthConverter();
-                            rowID.Height = (GridLength)grc.ConvertFromString("40");
+                            rowID.Height = (GridLength)grc.ConvertFromString("50");
                             grdSpawnsInfo.RowDefinitions.Add(rowID);
+
+                            Border titleBorder = new Border();
+                            titleBorder.SetValue(Grid.RowProperty, spawncount);
+                            titleBorder.Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#3A96B6");
+                            titleBorder.Margin = new Thickness(10, 10, 10, 0);
+                            grdSpawnsInfo.Children.Add(titleBorder);
 
                             Label lblID = new Label();
                             lblID.SetValue(Grid.RowProperty, spawncount);
                             lblID.FontSize = 30;
                             lblID.Content = ProperString(spawn.ID);
+                            lblID.Margin = new Thickness(15, 10, 15, 0);
+                            lblID.Style = (Style)FindResource("LabelShadowSmaller");
                             grdSpawnsInfo.Children.Add(lblID);
                             spawncount++;
 
@@ -2357,11 +2396,19 @@ namespace MasterCobbleDexWorkingNew
                             rowPokemon.Height = (GridLength)grc.ConvertFromString("36");
                             grdSpawnsInfo.RowDefinitions.Add(rowPokemon);
 
+                            Border infoBorder = new Border();
+                            infoBorder.SetValue(Grid.RowProperty, spawncount);
+                            infoBorder.Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#E2E2E2");
+                            infoBorder.Margin = new Thickness(20, 0, 20, 0);
+                            grdSpawnsInfo.Children.Add(infoBorder);
+                            int currentCount = spawncount;
+
                             Label lblPokemon = new Label();
                             lblPokemon.SetValue(Grid.RowProperty, spawncount);
                             lblPokemon.FontSize = 27;
                             lblPokemon.FontWeight = FontWeights.Bold;
                             lblPokemon.Content = ProperString(spawn.Pokemon);
+                            lblPokemon.Margin = new Thickness(30, 0, 30, 0);
                             grdSpawnsInfo.Children.Add(lblPokemon);
                             spawncount++;
 
@@ -2374,6 +2421,7 @@ namespace MasterCobbleDexWorkingNew
                             lblBucket.SetValue(Grid.RowProperty, spawncount);
                             lblBucket.FontSize = 27;
                             lblBucket.Content = ProperString(spawn.Bucket) + "\t\t" + ProperString(spawn.SpawnablePositionType);
+                            lblBucket.Margin = new Thickness(30, 0, 30, 0);
                             grdSpawnsInfo.Children.Add(lblBucket);
                             spawncount++;
 
@@ -2391,6 +2439,7 @@ namespace MasterCobbleDexWorkingNew
                                 foreach (string preset in spawn.Presets)
                                     lblPresets.Content = lblPresets.Content + ProperString(preset) + ", ";
                                 lblPresets.Content = lblPresets.Content.ToString().Substring(0, lblPresets.Content.ToString().Length - 2);
+                                lblPresets.Margin = new Thickness(30, 0, 30, 0);
                                 grdSpawnsInfo.Children.Add(lblPresets);
                                 spawncount++;
                             }
@@ -2401,6 +2450,7 @@ namespace MasterCobbleDexWorkingNew
 
                             Grid columnsGrid = new Grid();
                             columnsGrid.SetValue(Grid.RowProperty, spawncount);
+                            columnsGrid.Margin = new Thickness(30, 0, 30, 0);
                             grdSpawnsInfo.Children.Add(columnsGrid);
 
                             ColumnDefinition columnOne = new ColumnDefinition();
@@ -2696,7 +2746,7 @@ namespace MasterCobbleDexWorkingNew
                                 blkAntiConditions.Inlines.Add(new Run(spacing + "Using bait of " + spawn.AntiCondition.Bait));
                                 blkAntiConditions.Inlines.Add(new LineBreak());
                             }
-
+                            infoBorder.SetValue(Grid.RowSpanProperty, spawncount - currentCount + 1);
                             spawncount++;
                         }
 
