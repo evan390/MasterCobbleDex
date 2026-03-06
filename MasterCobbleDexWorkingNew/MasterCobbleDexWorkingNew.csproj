@@ -8,6 +8,10 @@
     <UseWPF>true</UseWPF>
     <Version>1.0.0</Version>
     <PackageId>MasteCobbleDex</PackageId>
+    <Authors>MasteCobbleDex</Authors>
+    <Company>MasteCobbleDex</Company>
+    <Product>MasteCobbleDex</Product>
+    <AssemblyName>MasterCobbleDex</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
